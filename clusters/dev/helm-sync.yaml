@@ -1,0 +1,63 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: helm-charts-repo
+  namespace: flux-system
+spec:
+  interval: 1m
+  url: https://github.com/biya-bi/rainbow-archiva.git
+  ref:
+    branch: main
+  ignore: |
+    # Exclude all
+    /*
+    # Include helm directory
+    !/helm/ 
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: artifactory-postgres
+  namespace: infra
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: ./helm/artifactory-postgres
+      sourceRef:
+        kind: GitRepository
+        name: helm-charts-repo
+        namespace: flux-system
+      interval: 10m
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: artifactory-oss
+  namespace: infra
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: ./helm/artifactory-oss
+      sourceRef:
+        kind: GitRepository
+        name: helm-charts-repo
+        namespace: flux-system
+      interval: 10m
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: artifactory-jcr
+  namespace: infra
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: ./helm/artifactory-jcr
+      sourceRef:
+        kind: GitRepository
+        name: helm-charts-repo
+        namespace: flux-system
+      interval: 10m
