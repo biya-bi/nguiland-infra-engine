@@ -27,11 +27,11 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: tekton-tasks-kustzn
+  name: tekton-cicd-kustzn
   namespace: flux-system
 spec:
   interval: 10m0s
-  path: ./tekton/tasks
+  path: ./tekton/cicd
   prune: true
   sourceRef:
     kind: GitRepository
