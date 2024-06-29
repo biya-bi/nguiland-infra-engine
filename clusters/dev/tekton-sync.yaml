@@ -1,0 +1,38 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: pipelines-repo
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  ref:
+    branch: main
+  secretRef:
+    name: flux-system
+  url: https://github.com/biya-bi/rainbow-infra-pipelines.git
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: tekton-kustzn
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  path: ./tekton/setup
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: pipelines-repo
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: tekton-tasks-kustzn
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  path: ./tekton/tasks
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: pipelines-repo
