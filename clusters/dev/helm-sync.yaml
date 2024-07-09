@@ -5,14 +5,14 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1m
-  url: https://github.com/biya-bi/rainbow-archiva.git
+  url: https://github.com/biya-bi/rainbow-infra-helm.git
   ref:
     branch: main
   ignore: |
     # Exclude all
     /*
-    # Include helm directory
-    !/helm/ 
+    # Include charts directory
+    !/charts/
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -23,7 +23,7 @@ spec:
   interval: 10m
   chart:
     spec:
-      chart: ./helm/artifactory-postgres
+      chart: ./charts/artifactory-postgres
       sourceRef:
         kind: GitRepository
         name: helm-charts-repo
@@ -39,7 +39,7 @@ spec:
   interval: 10m
   chart:
     spec:
-      chart: ./helm/artifactory-oss
+      chart: ./charts/artifactory-oss
       sourceRef:
         kind: GitRepository
         name: helm-charts-repo
@@ -55,7 +55,7 @@ spec:
   interval: 10m
   chart:
     spec:
-      chart: ./helm/artifactory-jcr
+      chart: ./charts/artifactory-jcr
       sourceRef:
         kind: GitRepository
         name: helm-charts-repo
