@@ -1,7 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
-  name: secrets-repo
+  name: rainbow-infra-secrets
   namespace: flux-system
 spec:
   interval: 1m0s
@@ -14,7 +14,7 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: sops-age-kustzn
+  name: sops-age
   namespace: flux-system
 spec:
   decryption:
@@ -26,4 +26,4 @@ spec:
   prune: true
   sourceRef:
     kind: GitRepository
-    name: secrets-repo
+    name: rainbow-infra-secrets

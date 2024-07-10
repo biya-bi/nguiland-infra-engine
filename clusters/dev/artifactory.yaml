@@ -1,7 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
-  name: helm-charts-repo
+  name: rainbow-infra-helm
   namespace: flux-system
 spec:
   interval: 1m
@@ -26,7 +26,7 @@ spec:
       chart: ./charts/artifactory-postgres
       sourceRef:
         kind: GitRepository
-        name: helm-charts-repo
+        name: rainbow-infra-helm
         namespace: flux-system
       interval: 10m
 ---
@@ -42,7 +42,7 @@ spec:
       chart: ./charts/artifactory-oss
       sourceRef:
         kind: GitRepository
-        name: helm-charts-repo
+        name: rainbow-infra-helm
         namespace: flux-system
       interval: 10m
 ---
@@ -58,6 +58,6 @@ spec:
       chart: ./charts/artifactory-jcr
       sourceRef:
         kind: GitRepository
-        name: helm-charts-repo
+        name: rainbow-infra-helm
         namespace: flux-system
       interval: 10m
