@@ -26,8 +26,8 @@ create_sops_age_secret() {
     local response=$(yes_or_no)
     if [ "${response}" == "Yes" ]; then
       local sops_age_private_key=$(get_sops_age_private_key "${sops_age_key_file}")
-      kubectl create namespace "${namespace}"
-      kubectl create secret generic sops-age --namespace="${namespace}" --from-literal=identity.agekey="${sops_age_private_key}"
+      kubectl create namespace "${namespace}" --dry-run=client -o yaml | grep -v "\s*creationTimestamp:\s*null" | kubectl apply -f -
+      kubectl create secret generic sops-age --namespace="${namespace}" --from-literal=identity.agekey="${sops_age_private_key}" --dry-run=client -o yaml | grep -v "\s*creationTimestamp:\s*null" | kubectl apply -f -
     fi
   fi
 }
