@@ -53,11 +53,12 @@ bootstrap_flux() {
 cluster="${1:-dev}"
 
 namespace="flux-system"
+sops_age_namespace="infra"
 owner="biya-bi"
 repository="rainbow-infra-engine"
 branch="main"
 
 sops_age_key_file=$(echo "${SOPS_AGE_KEY_FILE:-}" | xargs)
 
-create_sops_age_secret "${namespace}" "${sops_age_key_file}"
+create_sops_age_secret "${sops_age_namespace}" "${sops_age_key_file}"
 bootstrap_flux "${namespace}" "${owner}" "${repository}" "${branch}" "${cluster}"

@@ -2,12 +2,14 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
   name: rainbow-infra-helm
-  namespace: flux-system
+  namespace: infra
 spec:
   interval: 1m
-  url: https://github.com/biya-bi/rainbow-infra-helm.git
+  url: ssh://github.com/biya-bi/rainbow-infra-helm.git
   ref:
     branch: main
+  secretRef:
+    name: ssh-credentials
   ignore: |
     # Exclude all
     /*
@@ -27,7 +29,6 @@ spec:
       sourceRef:
         kind: GitRepository
         name: rainbow-infra-helm
-        namespace: flux-system
       interval: 10m
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
@@ -43,7 +44,6 @@ spec:
       sourceRef:
         kind: GitRepository
         name: rainbow-infra-helm
-        namespace: flux-system
       interval: 10m
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
@@ -59,5 +59,4 @@ spec:
       sourceRef:
         kind: GitRepository
         name: rainbow-infra-helm
-        namespace: flux-system
       interval: 10m
