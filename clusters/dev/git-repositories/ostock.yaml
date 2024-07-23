@@ -1,0 +1,12 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: ostock
+  namespace: infra
+spec:
+  interval: 1m0s
+  ref:
+    branch: main
+  secretRef:
+    name: ssh-credentials
+  url: ssh://github.com/biya-bi/ostock-infra.git

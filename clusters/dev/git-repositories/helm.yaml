@@ -1,0 +1,17 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: rainbow-infra-helm
+  namespace: infra
+spec:
+  interval: 1m
+  url: ssh://github.com/biya-bi/rainbow-infra-helm.git
+  ref:
+    branch: main
+  secretRef:
+    name: ssh-credentials
+  ignore: |
+    # Exclude all
+    /*
+    # Include charts directory
+    !/charts/
