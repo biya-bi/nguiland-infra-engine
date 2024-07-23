@@ -1,0 +1,14 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: keycloak
+  namespace: infra
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: ./charts/keycloak
+      sourceRef:
+        kind: GitRepository
+        name: rainbow-infra-helm
+      interval: 10m
