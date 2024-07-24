@@ -1,0 +1,14 @@
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Alert
+metadata:
+  name: maven-lib
+  namespace: infra
+spec:
+  providerRef:
+    name: maven-lib
+  eventSeverity: info
+  eventMetadata:
+    contextDir: '.'
+  eventSources:
+    - kind: GitRepository
+      name: io-utils

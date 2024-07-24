@@ -1,0 +1,8 @@
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Provider
+metadata:
+  name: maven-lib
+  namespace: infra
+spec:
+  type: generic
+  address: http://el-maven-lib.infra.svc.cluster.local:8080/
