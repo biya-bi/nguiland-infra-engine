@@ -6,7 +6,7 @@ metadata:
 spec:
   interval: 1m0s
   ref:
-    branch: main
+    branch: develop # In development clusters, the source-controller should clone the develop branch
   secretRef:
     name: ssh-credentials
   url: ssh://github.com/biya-bi/rainbow-io-utils.git

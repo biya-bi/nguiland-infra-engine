@@ -1,0 +1,12 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: io-utils
+  namespace: infra
+spec:
+  interval: 1m0s
+  ref:
+    branch: main # In production clusters, the source-controller should clone the main branch
+  secretRef:
+    name: ssh-credentials
+  url: ssh://github.com/biya-bi/rainbow-io-utils.git
