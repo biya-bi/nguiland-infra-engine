@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 yes_or_no() {  
   select response in "Yes" "No"; do
     case "${response}" in
@@ -74,13 +76,14 @@ bootstrap_flux() {
     --personal
 }
 
-cluster="${1:-dev}"
+cluster="${1}"
+branch="${2}"
 
 namespace="flux-system"
 sops_age_namespace="infra"
 owner="biya-bi"
 repository="rainbow-infra-engine"
-branch="main"
+branch="${branch}"
 
 sops_age_key_file=$(echo "${SOPS_AGE_KEY_FILE:-}" | xargs)
 
