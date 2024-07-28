@@ -1,0 +1,17 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: sops-age
+  namespace: infra
+spec:
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
+  interval: 30m0s
+  path: ./prod/sops-age # The prod directory should be used for production clusters
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: rainbow-infra-secrets
+    namespace: flux-system
