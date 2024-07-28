@@ -5,7 +5,7 @@ metadata:
   namespace: infra
 spec:
   interval: 10m0s
-  path: ./dev
+  path: ./prod/sops-age # The prod directory should be used for production clusters
   prune: true
   sourceRef:
     kind: GitRepository
