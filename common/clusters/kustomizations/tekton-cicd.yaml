@@ -4,6 +4,8 @@ metadata:
   name: tekton-cicd
   namespace: infra
 spec:
+  dependsOn:
+    - name: tekton-install
   interval: 10m0s
   path: ./cicd
   prune: true
