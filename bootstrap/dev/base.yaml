@@ -1,13 +1,13 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: clusters
+  name: base
   namespace: infra
 spec:
   dependsOn:
     - name: kyverno
   interval: 10m0s
-  path: ./common/clusters
+  path: ./common/base
   prune: true
   sourceRef:
     kind: GitRepository

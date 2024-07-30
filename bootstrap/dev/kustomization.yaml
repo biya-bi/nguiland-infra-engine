@@ -5,5 +5,5 @@ resources:
 - ../namespaces/kyverno.yaml
 - ../helm-repositories/kyverno.yaml
 - kyverno.yaml
-- clusters.yaml
+- base.yaml
 - dev.yaml
