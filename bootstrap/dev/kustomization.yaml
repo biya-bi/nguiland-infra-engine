@@ -4,6 +4,6 @@ resources:
 - ../namespaces/infra.yaml
 - ../namespaces/kyverno.yaml
 - ../helm-repositories/kyverno.yaml
-- kyverno.yaml
+- helm-releases.yaml
 - base.yaml
 - dev.yaml

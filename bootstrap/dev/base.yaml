@@ -5,7 +5,7 @@ metadata:
   namespace: infra
 spec:
   dependsOn:
-    - name: kyverno
+    - name: helm-releases
   interval: 10m0s
   path: ./common/base
   prune: true
