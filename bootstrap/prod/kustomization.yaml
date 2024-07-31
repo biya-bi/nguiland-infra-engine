@@ -1,0 +1,42 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../base
+
+patches:
+- patch: |-
+    - op: replace
+      path: /spec/path
+      value: ./common/environments/prod
+  target:
+    name: env
+- patch: |-
+    - op: replace
+      path: /spec/path
+      value: ./bootstrap/prod
+    - op: replace
+      path: /metadata/name
+      value: kyverno
+  target:
+    name: KYVERNO_KUSTOMIZATION
+- patch: |-
+    - op: replace
+      path: /spec/values/replicaCount
+      value: 2
+    - op: replace
+      path: /spec/values/admissionController/replicas
+      value: 3
+    - op: replace
+      path: /spec/values/backgroundController/replicas
+      value: 2
+    - op: replace
+      path: /spec/values/cleanupController/replicas
+      value: 2
+    - op: replace
+      path: /spec/values/reportsController/replicas
+      value: 2
+    - op: replace
+      path: /metadata/name
+      value: kyverno
+  target:
+    name: KYVERNO_RELEASE

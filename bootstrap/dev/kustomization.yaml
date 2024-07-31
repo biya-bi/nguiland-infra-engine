@@ -10,3 +10,18 @@ patches:
       value: ./common/environments/dev
   target:
     name: env
+- patch: |-
+    - op: replace
+      path: /spec/path
+      value: ./bootstrap/dev
+    - op: replace
+      path: /metadata/name
+      value: kyverno
+  target:
+    name: KYVERNO_KUSTOMIZATION
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: kyverno
+  target:
+    name: KYVERNO_RELEASE
