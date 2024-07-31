@@ -4,4 +4,3 @@ resources:
 - namespaces.yaml
 - kyverno.yaml
 - env.yaml
-

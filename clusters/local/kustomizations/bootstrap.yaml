@@ -5,7 +5,7 @@ metadata:
   namespace: infra
 spec:
   interval: 10m0s
-  path: ./bootstrap/dev
+  path: ./bootstrap/overlays/dev
   prune: true
   sourceRef:
     kind: GitRepository
