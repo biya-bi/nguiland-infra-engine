@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../namespaces/infra.yaml
+- ../namespaces/kyverno.yaml
+- ../helm-repositories/kyverno.yaml
+- helm-releases/kyverno.yaml
+- kyverno.yaml
+- base.yaml
+- env.yaml
