@@ -19,7 +19,7 @@ patches:
 - patch: |-
     - op: replace
       path: /spec/path
-      value: ./prod
+      value: ./overlays/prod
   target:
     group: kustomize.toolkit.fluxcd.io
     version: v1

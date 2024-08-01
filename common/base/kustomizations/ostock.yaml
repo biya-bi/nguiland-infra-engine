@@ -7,7 +7,7 @@ spec:
   dependsOn:
     - name: sops-age
   interval: 10m0s
-  path: ./${ENVIRONMENT}
+  path: ./overlays/${ENVIRONMENT}
   prune: true
   sourceRef:
     kind: GitRepository
