@@ -9,7 +9,7 @@ spec:
     secretRef:
       name: sops-age
   interval: 30m0s
-  path: ./dev/sops-age # The dev directory should be used for development clusters
+  path: ./${ENVIRONMENT}/sops-age
   prune: true
   sourceRef:
     kind: GitRepository

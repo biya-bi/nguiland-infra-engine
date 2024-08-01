@@ -7,7 +7,7 @@ patches:
 - patch: |-
     - op: replace
       path: /spec/path
-      value: ./common/environments/prod
+      value: ./common/overlays/prod
   target:
     name: env
 - patch: |-

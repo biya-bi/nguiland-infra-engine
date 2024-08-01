@@ -7,7 +7,7 @@ spec:
   interval: 1m
   url: ssh://github.com/biya-bi/rainbow-infra-helm.git
   ref:
-    branch: main # In production clusters, the source-controller should clone the main branch
+    branch: develop
   secretRef:
     name: ssh-credentials
   ignore: |

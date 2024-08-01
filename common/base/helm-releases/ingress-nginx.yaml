@@ -30,5 +30,4 @@ spec:
       target:
         kind: Deployment
   values:
-    replicaCount: 2 # For now, set the replica count to 2 for production clusters
-  
+    replicaCount: 1

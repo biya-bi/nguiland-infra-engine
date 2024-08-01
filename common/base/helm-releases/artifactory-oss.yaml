@@ -12,3 +12,5 @@ spec:
         kind: GitRepository
         name: rainbow-infra-helm
       interval: 10m
+  values:
+    replicaCount: 1
