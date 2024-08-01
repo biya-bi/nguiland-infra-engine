@@ -1,13 +1,25 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- ../../../base/kustomizations
+- ../../base
 
 patches:
 - patch: |-
     - op: replace
+      path: /spec/ref/branch
+      value: main
+  target:
+    kind: GitRepository
+- patch: |-
+    - op: replace
+      path: /spec/values/replicaCount
+      value: 2
+  target:
+    kind: HelmRelease
+- patch: |-
+    - op: replace
       path: /spec/path
-      value: ./dev
+      value: ./prod
   target:
     group: kustomize.toolkit.fluxcd.io
     version: v1
@@ -17,7 +29,7 @@ patches:
 - patch: |-
     - op: replace
       path: /spec/path
-      value: ./dev/sops-age
+      value: ./prod/sops-age
   target:
     group: kustomize.toolkit.fluxcd.io
     version: v1
