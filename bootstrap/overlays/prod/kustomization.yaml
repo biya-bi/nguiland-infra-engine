@@ -14,11 +14,12 @@ patches:
     - op: replace
       path: /spec/path
       value: ./bootstrap/overlays/prod
-    - op: replace
-      path: /metadata/name
-      value: kyverno
   target:
-    name: KYVERNO_KUSTOMIZATION
+    group: kustomize.toolkit.fluxcd.io
+    version: v1
+    kind: Kustomization
+    name: kyverno
+    namespace: infra
 - patch: |-
     - op: replace
       path: /spec/values/replicaCount
@@ -35,8 +36,9 @@ patches:
     - op: replace
       path: /spec/values/reportsController/replicas
       value: 2
-    - op: replace
-      path: /metadata/name
-      value: kyverno
   target:
-    name: KYVERNO_RELEASE
+    group: helm.toolkit.fluxcd.io
+    version: v2
+    kind: HelmRelease
+    name: kyverno
+    namespace: kyverno

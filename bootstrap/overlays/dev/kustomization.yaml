@@ -14,14 +14,9 @@ patches:
     - op: replace
       path: /spec/path
       value: ./bootstrap/overlays/dev
-    - op: replace
-      path: /metadata/name
-      value: kyverno
   target:
-    name: KYVERNO_KUSTOMIZATION
-- patch: |-
-    - op: replace
-      path: /metadata/name
-      value: kyverno
-  target:
-    name: KYVERNO_RELEASE
+    group: kustomize.toolkit.fluxcd.io
+    version: v1
+    kind: Kustomization
+    name: kyverno
+    namespace: infra
