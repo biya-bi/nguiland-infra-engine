@@ -56,7 +56,7 @@ metadata:
   namespace: infra
 spec:
   interval: 10m0s
-  path: ./bootstrap/${ENVIRONMENT} # Replace ${ENVIRONMENT} in overlays
+  path: ./bootstrap/overlays/${ENVIRONMENT} # Replace ${ENVIRONMENT} in overlays
   prune: true
   sourceRef:
     kind: GitRepository

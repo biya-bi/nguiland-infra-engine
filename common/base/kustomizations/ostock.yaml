@@ -4,6 +4,8 @@ metadata:
   name: ostock
   namespace: infra
 spec:
+  dependsOn:
+    - name: sops-age
   interval: 10m0s
   path: ./${ENVIRONMENT}
   prune: true
