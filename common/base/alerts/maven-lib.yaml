@@ -12,3 +12,5 @@ spec:
   eventSources:
     - kind: GitRepository
       name: io-utils
+    - kind: GitRepository
+      name: lib-parent

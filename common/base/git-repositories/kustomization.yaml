@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
 - helm.yaml
 - io-utils.yaml
+- lib-parent.yaml
 - ostock.yaml
 - secrets.yaml
 - tekton.yaml

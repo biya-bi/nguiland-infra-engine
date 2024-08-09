@@ -1,0 +1,12 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: lib-parent
+  namespace: infra
+spec:
+  interval: 1m0s
+  ref:
+    branch: develop
+  secretRef:
+    name: ssh-credentials
+  url: ssh://github.com/biya-bi/rainbow-lib-parent.git
