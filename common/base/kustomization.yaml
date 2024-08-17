@@ -5,6 +5,7 @@ resources:
 - git-repositories
 - helm-releases
 - helm-repositories
+- ingresses
 - kustomizations
 - policies
 - providers

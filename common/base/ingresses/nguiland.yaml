@@ -1,0 +1,44 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nguiland
+  namespace: infra
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: devjcr.nguiland.org
+    http:
+      paths:
+      - backend:
+          service:
+            name: artifactory-jcr
+            port:
+              number: 8082
+        path: /
+        pathType: Prefix
+  - host: devkeycloak.nguiland.org
+    http:
+      paths:
+      - backend:
+          service:
+            name: keycloak
+            port:
+              number: 8080
+        path: /
+        pathType: Prefix
+  - host: devoss.nguiland.org
+    http:
+      paths:
+      - backend:
+          service:
+            name: artifactory-oss
+            port:
+              number: 8082
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - devjcr.nguiland.org
+    - devkeycloak.nguiland.org
+    - devoss.nguiland.org
+    secretName: nguiland
