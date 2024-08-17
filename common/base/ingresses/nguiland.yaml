@@ -1,3 +1,4 @@
+# CAUTION: The order of the rules and tls matter in overlays. Don't change the order. Any new element should be appended instead
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -6,7 +7,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: devjcr.nguiland.org
+  - host: jcr.nguiland.org # All environments, except local, use the same jcr
     http:
       paths:
       - backend:
@@ -26,7 +27,7 @@ spec:
               number: 8080
         path: /
         pathType: Prefix
-  - host: devoss.nguiland.org
+  - host: oss.nguiland.org # All environments, except local, use the same oss
     http:
       paths:
       - backend:
@@ -38,7 +39,7 @@ spec:
         pathType: Prefix
   tls:
   - hosts:
-    - devjcr.nguiland.org
+    - jcr.nguiland.org
     - devkeycloak.nguiland.org
-    - devoss.nguiland.org
+    - oss.nguiland.org
     secretName: nguiland

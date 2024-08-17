@@ -25,9 +25,18 @@ patches:
     name: sops-age
     namespace: infra
 - patch: |-
-    $patch: delete
-    apiVersion: networking.k8s.io/v1
+    - op: remove
+      path: /spec/rules/2
+    - op: remove
+      path: /spec/rules/1
+    - op: replace
+      path: /spec/rules/0/host
+      value: artifactory-jcr.infra
+    - op: remove
+      path: /spec/tls
+  target:
+    group: networking.k8s.io
+    version: v1
     kind: Ingress
-    metadata:
-      name: nguiland
-      namespace: infra
+    name: nguiland
+    namespace: infra
