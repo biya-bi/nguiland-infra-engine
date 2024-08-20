@@ -49,3 +49,12 @@ patches:
     kind: ConfigMap
     name: env-settings
     namespace: infra
+- patch: |-
+    - op: replace
+      path: /spec/rules/0/mutate/patchStrategicMerge/spec/containers/0/<(image)
+      value: "artifactory-jcr.infra:30000/*"
+  target:
+    group: kyverno.io
+    version: v1
+    kind: ClusterPolicy
+    name: add-imagepullsecrets
