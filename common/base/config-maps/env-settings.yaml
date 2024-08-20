@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-settings
+  namespace: infra
+data:
+  image-pull-endpoint: ${ENVIRONMENT}

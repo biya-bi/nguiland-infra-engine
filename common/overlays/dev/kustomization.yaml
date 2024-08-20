@@ -24,3 +24,13 @@ patches:
     kind: Kustomization
     name: sops-age
     namespace: infra
+- patch: |-
+    - op: replace
+      path: /data/image-pull-endpoint
+      value: jcr.nguiland.org
+  target:
+    version: v1
+    kind: ConfigMap
+    name: env-settings
+    namespace: infra
+  

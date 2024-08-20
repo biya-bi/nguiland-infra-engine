@@ -40,3 +40,12 @@ patches:
     kind: Ingress
     name: nguiland
     namespace: infra
+- patch: |-
+    - op: replace
+      path: /data/image-pull-endpoint
+      value: artifactory-jcr.infra:30000
+  target:
+    version: v1
+    kind: ConfigMap
+    name: env-settings
+    namespace: infra
