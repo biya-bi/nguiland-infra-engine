@@ -25,15 +25,17 @@ patches:
     name: sops-age
     namespace: infra
 - patch: |-
-    - op: remove
-      path: /spec/rules/2
-    - op: remove
-      path: /spec/rules/1
     - op: replace
       path: /spec/rules/0/host
       value: artifactory-jcr.infra
     - op: replace
       path: /spec/rules/1/host
+      value: keycloak.infra
+    - op: replace
+      path: /spec/rules/2/host
+      value: artifactory-oss.infra
+    - op: replace
+      path: /spec/rules/3/host
       value: angular-frontend.ostock
     - op: remove
       path: /spec/tls

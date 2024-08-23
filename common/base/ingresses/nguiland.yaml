@@ -11,7 +11,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: jcr.nguiland.org # All environments, except local, use the same jcr
+  - host: ${ACTIFACTORY_JCR_HOST}
     http:
       paths:
       - backend:
@@ -21,7 +21,7 @@ spec:
               number: 8082
         path: /
         pathType: Prefix
-  - host: devkeycloak.nguiland.org
+  - host: ${KEYCLOAK_HOST}
     http:
       paths:
       - backend:
@@ -31,7 +31,7 @@ spec:
               number: 8080
         path: /
         pathType: Prefix
-  - host: oss.nguiland.org # All environments, except local, use the same oss
+  - host: ${ACTIFACTORY_OSS_HOST}
     http:
       paths:
       - backend:
@@ -52,8 +52,5 @@ spec:
         path: /
         pathType: Prefix
   tls:
-  - hosts:
-    - jcr.nguiland.org
-    - devkeycloak.nguiland.org
-    - oss.nguiland.org
+  - hosts: []
     secretName: nguiland

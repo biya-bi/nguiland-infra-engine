@@ -44,8 +44,26 @@ patches:
     name: add-imagepullsecrets
 - patch: |-
     - op: replace
+      path: /spec/rules/0/host
+      value: jcr.nguiland.org
+    - op: replace
+      path: /spec/rules/1/host
+      value: devkeycloak.nguiland.org
+    - op: replace
+      path: /spec/rules/2/host
+      value: oss.nguiland.org
+    - op: replace
       path: /spec/rules/3/host
       value: devostockng.nguiland.org
+    - op: add
+      path: /spec/tls/0/hosts/-
+      value: jcr.nguiland.org
+    - op: add
+      path: /spec/tls/0/hosts/-
+      value: devkeycloak.nguiland.org
+    - op: add
+      path: /spec/tls/0/hosts/-
+      value: oss.nguiland.org
     - op: add
       path: /spec/tls/0/hosts/-
       value: devostockng.nguiland.org
