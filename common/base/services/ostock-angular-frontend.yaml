@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ostock-angular-frontend
+  namespace: infra
+spec:
+  type: ExternalName
+  externalName: angular-frontend.ostock.svc.cluster.local

@@ -43,6 +43,12 @@ patches:
     - op: replace
       path: /spec/tls/0/hosts/1
       value: keycloak.nguiland.org
+    - op: replace
+      path: /spec/rules/3/host
+      value: ostockng.nguiland.org
+    - op: add
+      path: /spec/tls/0/hosts/-
+      value: ostockng.nguiland.org
   target:
     group: networking.k8s.io
     version: v1

@@ -42,3 +42,16 @@ patches:
     version: v1
     kind: ClusterPolicy
     name: add-imagepullsecrets
+- patch: |-
+    - op: replace
+      path: /spec/rules/3/host
+      value: devostockng.nguiland.org
+    - op: add
+      path: /spec/tls/0/hosts/-
+      value: devostockng.nguiland.org
+  target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: nguiland
+    namespace: infra

@@ -10,3 +10,4 @@ resources:
 - kustomizations
 - policies
 - providers
+- services

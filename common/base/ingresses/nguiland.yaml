@@ -41,6 +41,16 @@ spec:
               number: 8082
         path: /
         pathType: Prefix
+  - host: ${OSTOCK_ANGULAR_FRONTEND_HOST}
+    http:
+      paths:
+      - backend:
+          service:
+            name: ostock-angular-frontend
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
   tls:
   - hosts:
     - jcr.nguiland.org

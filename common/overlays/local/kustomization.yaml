@@ -32,6 +32,9 @@ patches:
     - op: replace
       path: /spec/rules/0/host
       value: artifactory-jcr.infra
+    - op: replace
+      path: /spec/rules/1/host
+      value: angular-frontend.ostock
     - op: remove
       path: /spec/tls
   target:
