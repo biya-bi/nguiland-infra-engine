@@ -55,6 +55,9 @@ patches:
     - op: replace
       path: /spec/rules/3/host
       value: devostockng.nguiland.org
+    - op: replace
+      path: /spec/rules/4/host
+      value: devostockapi.nguiland.org
     - op: add
       path: /spec/tls/0/hosts/-
       value: jcr.nguiland.org
@@ -67,6 +70,9 @@ patches:
     - op: add
       path: /spec/tls/0/hosts/-
       value: devostockng.nguiland.org
+    - op: add
+      path: /spec/tls/0/hosts/-
+      value: devostockapi.nguiland.org
   target:
     group: networking.k8s.io
     version: v1

@@ -52,6 +52,16 @@ spec:
               number: 80
         path: /
         pathType: Prefix
+  - host: ${OSTOCK_GATEWAY_SERVICE_HOST}
+    http:
+      paths:
+      - backend:
+          service:
+            name: ostock-gateway-service
+            port:
+              number: 8080
+        path: /
+        pathType: Prefix
   tls:
   - hosts: []
     secretName: nguiland

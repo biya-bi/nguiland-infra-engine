@@ -37,6 +37,9 @@ patches:
     - op: replace
       path: /spec/rules/3/host
       value: angular-frontend.ostock
+    - op: replace
+      path: /spec/rules/4/host
+      value: gateway-service.ostock
     - op: remove
       path: /spec/tls
   target:
