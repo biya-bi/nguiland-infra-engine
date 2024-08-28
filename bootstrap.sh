@@ -46,7 +46,7 @@ create_sops_age_secret() {
   local sops_age_key_file="$2"
 
   if [ -f "${sops_age_key_file}" ]; then
-    printf "The '%s' environment variable points to the '%s' file. \nDo you what to use the later file for the deployment?\n" "SOPS_AGE_KEY_FILE" "${sops_age_key_file}"
+    printf "The '%s' environment variable points to the '%s' file. \nDo you want to use the later file for the deployment?\n" "SOPS_AGE_KEY_FILE" "${sops_age_key_file}"
     local response=$(yes_or_no)
     if [ "${response}" == "Yes" ]; then
       create_namespace "${namespace}"
