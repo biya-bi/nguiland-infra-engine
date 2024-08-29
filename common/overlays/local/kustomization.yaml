@@ -50,6 +50,9 @@ patches:
     namespace: infra
 - patch: |-
     - op: replace
+      path: /data/environment
+      value: local
+    - op: replace
       path: /data/image-pull-endpoint
       value: artifactory-jcr.infra:30000
   target:

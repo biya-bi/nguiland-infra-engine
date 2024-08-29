@@ -75,6 +75,9 @@ patches:
     namespace: infra
 - patch: |-
     - op: replace
+      path: /data/environment
+      value: prod
+    - op: replace
       path: /data/image-pull-endpoint
       value: jcr.nguiland.org
   target:
