@@ -4,4 +4,4 @@ metadata:
   name: env-settings
   namespace: infra
 data:
-  image-pull-endpoint: ${ENVIRONMENT}
+  image-pull-endpoint: ${IMAGE_PULL_ENDPOINT}
