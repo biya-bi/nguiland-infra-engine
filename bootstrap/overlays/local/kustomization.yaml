@@ -9,7 +9,11 @@ patches:
       path: /spec/path
       value: ./common/overlays/local
   target:
+    group: kustomize.toolkit.fluxcd.io
+    version: v1
+    kind: Kustomization
     name: env
+    namespace: infra
 - patch: |-
     - op: replace
       path: /spec/path
