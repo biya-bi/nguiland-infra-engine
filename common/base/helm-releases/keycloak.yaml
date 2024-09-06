@@ -10,7 +10,7 @@ spec:
       chart: ./charts/keycloak
       sourceRef:
         kind: GitRepository
-        name: rainbow-infra-helm
+        name: nguiland-infra-helm
       interval: 10m
   values:
     replicaCount: 1

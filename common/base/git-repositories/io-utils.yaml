@@ -9,4 +9,4 @@ spec:
     branch: develop
   secretRef:
     name: ssh-credentials
-  url: ssh://github.com/biya-bi/rainbow-io-utils.git
+  url: ssh://github.com/biya-bi/nguiland-io-utils.git

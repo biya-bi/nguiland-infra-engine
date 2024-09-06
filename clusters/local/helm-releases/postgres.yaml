@@ -10,5 +10,5 @@ spec:
       chart: ./charts/postgres
       sourceRef:
         kind: GitRepository
-        name: rainbow-infra-helm
+        name: nguiland-infra-helm
       interval: 10m

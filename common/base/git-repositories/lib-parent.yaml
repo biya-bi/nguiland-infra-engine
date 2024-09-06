@@ -9,4 +9,4 @@ spec:
     branch: develop
   secretRef:
     name: ssh-credentials
-  url: ssh://github.com/biya-bi/rainbow-lib-parent.git
+  url: ssh://github.com/biya-bi/nguiland-lib-parent.git

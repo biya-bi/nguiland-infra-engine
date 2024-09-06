@@ -1,7 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
-  name: rainbow-infra-tekton
+  name: nguiland-infra-tekton
   namespace: infra
 spec:
   interval: 1m0s
@@ -9,4 +9,4 @@ spec:
     branch: develop
   secretRef:
     name: ssh-credentials
-  url: ssh://github.com/biya-bi/rainbow-infra-tekton.git
+  url: ssh://github.com/biya-bi/nguiland-infra-tekton.git

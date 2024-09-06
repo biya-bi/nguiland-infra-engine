@@ -87,7 +87,7 @@ branch="${2}"
 namespace="flux-system"
 sops_age_namespace="infra"
 owner="biya-bi"
-repository="rainbow-infra-engine"
+repository="nguiland-infra-engine"
 branch="${branch}"
 
 sops_age_key_file=$(echo "${SOPS_AGE_KEY_FILE:-}" | xargs)

@@ -13,5 +13,5 @@ spec:
   prune: true
   sourceRef:
     kind: GitRepository
-    name: rainbow-infra-secrets
+    name: nguiland-infra-secrets
     namespace: flux-system
