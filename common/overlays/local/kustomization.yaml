@@ -54,7 +54,7 @@ patches:
       value: local
     - op: replace
       path: /data/image-pull-endpoint
-      value: artifactory-jcr.infra:30000
+      value: artifactory-jcr.infra
   target:
     version: v1
     kind: ConfigMap
@@ -63,7 +63,7 @@ patches:
 - patch: |-
     - op: replace
       path: /spec/rules/0/mutate/patchStrategicMerge/spec/containers/0/<(image)
-      value: "artifactory-jcr.infra:30000/*"
+      value: "artifactory-jcr.infra/*"
   target:
     group: kyverno.io
     version: v1
