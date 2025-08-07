@@ -1,6 +1,6 @@
 # Introduction
 
-This project is an infrastructure engine. Its purpose is to drive act on an infrastructure based on certain events.
+This project is an infrastructure engine. Its purpose is to drive an infrastructure based on certain events.
 
 # Secret as Code use case
 It can help implement Secret as Code projects in a simple but secure way. By so doing, secrets can be kept encrypted in the Git repository and their life cycles managed via pull requests. With this approach, we can take advantage of GitOps tools such as [Flux](https://fluxcd.io/flux/) which will decrypt the secrets and apply the decrypted secrets to a Kubernetes cluster for example.
@@ -82,6 +82,6 @@ Each time a commit is pushed to the branch tracked by Flux, flux will do the rec
 # Manually launch the reconcilation
 flux reconcile kustomization flux-system --timeout 60s
 
-# Monitor the reconcialation
+# Monitor the reconcilation
 flux get kustomization flux-system
 ```
