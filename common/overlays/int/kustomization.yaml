@@ -1,0 +1,71 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../../base
+
+patches:
+- patch: |-
+    - op: replace
+      path: /spec/path
+      value: ./overlays/int
+  target:
+    group: kustomize.toolkit.fluxcd.io
+    version: v1
+    kind: Kustomization
+    name: ostock
+    namespace: infra
+- patch: |-
+    - op: replace
+      path: /spec/path
+      value: ./int/sops-age
+  target:
+    group: kustomize.toolkit.fluxcd.io
+    version: v1
+    kind: Kustomization
+    name: sops-age
+    namespace: infra
+- patch: |-
+    - op: replace
+      path: /spec/rules/0/host
+      value: artifactory-jcr.infra
+    - op: replace
+      path: /spec/rules/1/host
+      value: keycloak.infra
+    - op: replace
+      path: /spec/rules/2/host
+      value: artifactory-oss.infra
+    - op: replace
+      path: /spec/rules/3/host
+      value: angular-frontend.ostock
+    - op: replace
+      path: /spec/rules/4/host
+      value: gateway-service.ostock
+    - op: remove
+      path: /spec/tls
+  target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: nguiland
+    namespace: infra
+- patch: |-
+    - op: replace
+      path: /data/environment
+      value: int
+    - op: replace
+      path: /data/image-pull-endpoint
+      value: artifactory-jcr.infra
+  target:
+    version: v1
+    kind: ConfigMap
+    name: env-settings
+    namespace: infra
+- patch: |-
+    - op: replace
+      path: /spec/rules/0/mutate/patchStrategicMerge/spec/containers/0/<(image)
+      value: "artifactory-jcr.infra/*"
+  target:
+    group: kyverno.io
+    version: v1
+    kind: ClusterPolicy
+    name: add-imagepullsecrets
