@@ -51,31 +51,31 @@ patches:
       value: jcr.nguiland.org
     - op: replace
       path: /spec/rules/1/host
-      value: devkeycloak.nguiland.org
+      value: dev-keycloak.nguiland.org
     - op: replace
       path: /spec/rules/2/host
       value: oss.nguiland.org
     - op: replace
       path: /spec/rules/3/host
-      value: devostockng.nguiland.org
+      value: dev-ostockng.nguiland.org
     - op: replace
       path: /spec/rules/4/host
-      value: devostockapi.nguiland.org
+      value: dev-ostockapi.nguiland.org
     - op: add
       path: /spec/tls/0/hosts/-
       value: jcr.nguiland.org
     - op: add
       path: /spec/tls/0/hosts/-
-      value: devkeycloak.nguiland.org
+      value: dev-keycloak.nguiland.org
     - op: add
       path: /spec/tls/0/hosts/-
       value: oss.nguiland.org
     - op: add
       path: /spec/tls/0/hosts/-
-      value: devostockng.nguiland.org
+      value: dev-ostockng.nguiland.org
     - op: add
       path: /spec/tls/0/hosts/-
-      value: devostockapi.nguiland.org
+      value: dev-ostockapi.nguiland.org
   target:
     group: networking.k8s.io
     version: v1
