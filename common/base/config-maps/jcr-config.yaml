@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: artifactory-jcr-config
+  namespace: infra
+data:
+  artifactory.config.import.yml: |
+    GeneralConfiguration:
+      eula:
+        accepted: true
+    OnboardingConfiguration:
+      repoTypes:
+        - docker
