@@ -16,3 +16,5 @@ spec:
       name: lib-parent
     - kind: GitRepository
       name: web-oauth2
+    - kind: GitRepository
+      name: context
