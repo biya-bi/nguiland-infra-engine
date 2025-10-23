@@ -18,3 +18,5 @@ spec:
       name: web-oauth2
     - kind: GitRepository
       name: context
+    - kind: GitRepository
+      name: ms-parent

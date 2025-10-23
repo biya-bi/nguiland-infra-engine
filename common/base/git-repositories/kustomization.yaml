@@ -5,6 +5,7 @@ resources:
 - helm.yaml
 - io-utils.yaml
 - lib-parent.yaml
+- ms-parent.yaml
 - web-oauth2.yaml
 - ostock.yaml
 - secrets.yaml
