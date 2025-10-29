@@ -4,7 +4,7 @@ resources:
 - context.yaml
 - helm.yaml
 - io-utils.yaml
-- lib-parent.yaml
+- dependencies.yaml
 - ms-parent.yaml
 - web-oauth2.yaml
 - ostock.yaml

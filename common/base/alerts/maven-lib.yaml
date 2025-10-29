@@ -13,7 +13,7 @@ spec:
     - kind: GitRepository
       name: io-utils
     - kind: GitRepository
-      name: lib-parent
+      name: dependencies
     - kind: GitRepository
       name: web-oauth2
     - kind: GitRepository

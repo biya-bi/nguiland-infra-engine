@@ -1,7 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
-  name: lib-parent
+  name: dependencies
   namespace: infra
 spec:
   interval: 1m0s
@@ -9,4 +9,4 @@ spec:
     branch: develop
   secretRef:
     name: ssh-credentials
-  url: ssh://github.com/biya-bi/nguiland-lib-parent.git
+  url: ssh://github.com/biya-bi/nguiland-dependencies.git
