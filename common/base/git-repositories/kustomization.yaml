@@ -10,3 +10,4 @@ resources:
 - ostock.yaml
 - secrets.yaml
 - tekton.yaml
+- rest.yaml

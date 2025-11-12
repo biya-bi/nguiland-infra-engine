@@ -20,3 +20,5 @@ spec:
       name: context
     - kind: GitRepository
       name: ms-parent
+    - kind: GitRepository
+      name: rest
