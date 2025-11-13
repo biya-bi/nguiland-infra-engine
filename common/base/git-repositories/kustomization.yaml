@@ -10,3 +10,4 @@ resources:
 - secrets.yaml
 - tekton.yaml
 - rest.yaml
+- orm.yaml

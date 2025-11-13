@@ -20,3 +20,5 @@ spec:
       name: ms-parent
     - kind: GitRepository
       name: rest
+    - kind: GitRepository
+      name: orm
