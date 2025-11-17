@@ -11,3 +11,4 @@ resources:
 - tekton.yaml
 - rest.yaml
 - orm.yaml
+- dto.yaml

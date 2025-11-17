@@ -22,3 +22,5 @@ spec:
       name: rest
     - kind: GitRepository
       name: orm
+    - kind: GitRepository
+      name: dto
