@@ -53,8 +53,6 @@ spec:
                   NOW_EPOCH=$(date +%s)
                   CUTOFF_EPOCH=$((NOW_EPOCH - MAX_AGE_HOURS * 3600))
 
-                  echo "Cutoff epoch: $CUTOFF_EPOCH"
-
                   # -----------------------------
                   # Query Artifactory
                   # -----------------------------
@@ -79,7 +77,9 @@ spec:
                     exit 1
                   fi
 
-                  # Normalize results
+                  # -----------------------------
+                  # Normalize response
+                  # -----------------------------
                   jq '
                     if (.results == null or (.results | type != "array")) then
                       .results = []
@@ -96,19 +96,37 @@ spec:
                     exit 0
                   fi
 
+                  echo "---- Timestamp Parse Errors (if any) ----"
+
                   # -----------------------------
-                  # Detect offending artifacts
+                  # Detect offenders (threshold OR age)
                   # -----------------------------
-                  jq -r '
+                  jq -r --argjson cutoff "$CUTOFF_EPOCH" '
                     .results
                     | sort_by(.path)
                     | group_by(.path)
-                    | map(select(length > '"$MAX_SNAPSHOTS"'))
+                    | map({
+                        path: .[0].path,
+                        count: length,
+                        oldest: (
+                          map(
+                            try (.created | split(".")[0] + "Z" | fromdateiso8601)
+                            catch (
+                              ("PARSE_ERROR|" + .path + "/" + .name + "|" + .created) | @stderr
+                              | 0
+                            )
+                          ) | min
+                        )
+                      })
+                    | map(select(
+                        (.count > '"$MAX_SNAPSHOTS"') or
+                        (.oldest < $cutoff)
+                      ))
                     | .[].path
                   ' result.json > offenders.txt
 
-                  OFFENDER_COUNT=$(wc -l < offenders.txt)
-                  echo "Offending artifacts: $OFFENDER_COUNT"
+                  OFFENDER_COUNT=$(grep -c . offenders.txt || true)
+                  echo "Artifacts requiring cleanup: $OFFENDER_COUNT"
 
                   if [ "$OFFENDER_COUNT" -eq 0 ]; then
                     echo "No cleanup required."
@@ -118,12 +136,18 @@ spec:
                   cat offenders.txt
 
                   # -----------------------------
-                  # Build-aware cleanup (FAST)
+                  # Build-aware cleanup
                   # -----------------------------
-                  jq -r --slurpfile offenders offenders.txt '
+                  jq -r --rawfile offenders offenders.txt '
                     .results[]
-                    | select(.path as $p | $offenders[] == $p)
-                    | .created_epoch = (.created | fromdateiso8601)
+                    | select(.path as $p | ($offenders | split("\n") | map(select(length > 0)) | index($p)))
+                    | .created_epoch = (
+                        try (.created | split(".")[0] + "Z" | fromdateiso8601)
+                        catch (
+                          ("PARSE_ERROR|" + .path + "/" + .name + "|" + .created) | @stderr
+                          | 0
+                        )
+                      )
                     | "\(.path)|\(.name)|\(.created_epoch)"
                   ' result.json \
                   | gawk -F'|' '
@@ -222,13 +246,22 @@ spec:
                     return 1
                   }
 
-                  export -f delete_file
-                  export ART_USER ART_PASS ART_URL REPO RETRIES
-
                   echo "Starting parallel deletion..."
 
                   cat delete.txt | grep -v '^$' | \
-                    xargs -I {} -P $MAX_PARALLEL sh -c 'delete_file "$@"' _ {}
+                    xargs -I {} -P $MAX_PARALLEL sh -c '
+                      FILE="$1"
+                      for i in $(seq 1 '"$RETRIES"'); do
+                        echo "Deleting $FILE (attempt $i)"
+                        if curl -sf -u "'"$ART_USER:$ART_PASS"'" -X DELETE "'"$ART_URL/$REPO"'/$FILE"; then
+                          echo "Deleted $FILE"
+                          exit 0
+                        fi
+                        sleep $((i * 2))
+                      done
+                      echo "FAILED to delete $FILE" >&2
+                      exit 1
+                    ' _ {}
 
                   echo "Cleanup complete."
 
