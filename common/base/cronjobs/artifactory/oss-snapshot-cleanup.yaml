@@ -4,7 +4,7 @@ metadata:
   name: artifactory-oss-snapshot-cleanup
   namespace: infra
 spec:
-  schedule: "0 3 * * *"
+  schedule: "0 * * * *"
   jobTemplate:
     spec:
       template:
@@ -29,23 +29,35 @@ spec:
                   value: "libs-snapshot"
                 - name: KEEP
                   value: "5"
+                - name: MAX_SNAPSHOTS
+                  value: "20"
+                - name: MAX_AGE_HOURS
+                  value: "24"
                 - name: DRY_RUN
                   value: "false"
+                - name: MAX_PARALLEL
+                  value: "5"
+                - name: RETRIES
+                  value: "3"
+
               command: ["/bin/sh", "-c"]
               args:
                 - |
                   set -euo pipefail
 
-                  echo "=== Artifactory Snapshot Cleanup (Dry Run: $DRY_RUN) ==="
+                  echo "=== Artifactory Snapshot Cleanup ==="
+                  echo "Dry run: $DRY_RUN"
 
-                  # Install dependencies
-                  apk add --no-cache curl jq gawk
+                  apk add --no-cache curl jq gawk coreutils
 
-                  echo "Using repo: $REPO"
-                  echo "Keeping latest $KEEP builds per artifact"
+                  NOW_EPOCH=$(date +%s)
+                  CUTOFF_EPOCH=$((NOW_EPOCH - MAX_AGE_HOURS * 3600))
 
-                  echo "Querying snapshot artifacts..."
+                  echo "Cutoff epoch: $CUTOFF_EPOCH"
 
+                  # -----------------------------
+                  # Query Artifactory
+                  # -----------------------------
                   QUERY=$(cat <<EOF
                   items.find({
                     "repo": "$REPO"
@@ -53,25 +65,67 @@ spec:
                   EOF
                   )
 
-                  curl -s -u $ART_USER:$ART_PASS \
+                  curl -s -u "$ART_USER:$ART_PASS" \
                     -X POST "$ART_URL/api/search/aql" \
                     -H "Content-Type: text/plain" \
                     -d "$QUERY" > result.json
 
-                  echo "---- Result summary ----"
-                  jq '.results | length' result.json || true
-                  echo "------------------------"
-
-                  # --- Detect API errors ---
+                  # -----------------------------
+                  # Validate API response
+                  # -----------------------------
                   if jq -e '.errors' result.json > /dev/null; then
                     echo "ERROR: Artifactory returned errors"
                     jq . result.json
                     exit 1
                   fi
 
-                  echo "Grouping by artifact + build..."
+                  # Normalize results
+                  jq '
+                    if (.results == null or (.results | type != "array")) then
+                      .results = []
+                    else
+                      .
+                    end
+                  ' result.json > tmp.json && mv tmp.json result.json
 
-                  jq -r '.results // [] | .[] | "\(.path)|\(.name)|\(.created)"' result.json \
+                  TOTAL=$(jq '.results | length' result.json)
+                  echo "Total artifacts returned: $TOTAL"
+
+                  if [ "$TOTAL" -eq 0 ]; then
+                    echo "No artifacts found. Exiting."
+                    exit 0
+                  fi
+
+                  # -----------------------------
+                  # Detect offending artifacts
+                  # -----------------------------
+                  jq -r '
+                    .results
+                    | sort_by(.path)
+                    | group_by(.path)
+                    | map(select(length > '"$MAX_SNAPSHOTS"'))
+                    | .[].path
+                  ' result.json > offenders.txt
+
+                  OFFENDER_COUNT=$(wc -l < offenders.txt)
+                  echo "Offending artifacts: $OFFENDER_COUNT"
+
+                  if [ "$OFFENDER_COUNT" -eq 0 ]; then
+                    echo "No cleanup required."
+                    exit 0
+                  fi
+
+                  cat offenders.txt
+
+                  # -----------------------------
+                  # Build-aware cleanup (FAST)
+                  # -----------------------------
+                  jq -r --slurpfile offenders offenders.txt '
+                    .results[]
+                    | select(.path as $p | $offenders[] == $p)
+                    | .created_epoch = (.created | fromdateiso8601)
+                    | "\(.path)|\(.name)|\(.created_epoch)"
+                  ' result.json \
                   | gawk -F'|' '
                   function extract_build(name) {
                     if (match(name, /[0-9]{8}\.[0-9]{6}-[0-9]+/)) {
@@ -80,65 +134,101 @@ spec:
                     return "UNKNOWN"
                   }
                   {
-                    path=$1
-                    name=$2
-                    created=$3
-
-                    # Only process snapshot files
-                    if (path !~ /SNAPSHOT/) next
-
-                    build=extract_build(name)
-                    key=path
-
-                    print key "|" build "|" path "/" name "|" created
+                    print $1 "|" extract_build($2) "|" $1 "|" $2 "|" $3
                   }' \
-                  | sort -t'|' -k1,1 -k2,2 -k4,4r \
-                  | gawk -F'|' -v KEEP=$KEEP '
+                  | sort -t'|' -k1,1 -k2,2 -k5,5nr \
+                  | gawk -F'|' -v KEEP=$KEEP -v CUTOFF=$CUTOFF_EPOCH '
                   {
                     key=$1
                     build=$2
-                    file=$3
+                    path=$3
+                    name=$4
+                    epoch=$5
 
                     build_key=key "|" build
 
                     if (!(build_key in seen)) {
                       seen[build_key]=1
                       build_count[key]++
+                      build_order[key, build_count[key]] = build
                     }
 
-                    if (build_count[key] > KEEP) {
-                      print file
+                    files[build_key] = files[build_key] "\n" path "/" name
+
+                    if (epoch > build_time[build_key]) {
+                      build_time[build_key] = epoch
+                    }
+                  }
+                  END {
+                    for (k in seen) {
+                      split(k, parts, "|")
+                      key = parts[1]
+                      build = parts[2]
+
+                      idx = -1
+                      for (i = 1; i <= build_count[key]; i++) {
+                        if (build_order[key, i] == build) {
+                          idx = i
+                          break
+                        }
+                      }
+
+                      if (idx == 1) continue
+                      if (idx <= KEEP) continue
+
+                      if (build_time[k] < CUTOFF) {
+                        print files[k]
+                        continue
+                      }
+
+                      print files[k]
                     }
                   }' > delete.txt
 
-                  echo "----------------------------------------"
-                  echo "Preview parsed data (first 20 entries):"
-                  head -n 20 delete.txt || true
-                  echo "----------------------------------------"
-
-                  DELETE_COUNT=$(wc -l < delete.txt)
-
-                  echo "Total files marked for deletion: $DELETE_COUNT"
+                  DELETE_COUNT=$(grep -c . delete.txt || true)
+                  echo "Files to delete: $DELETE_COUNT"
 
                   if [ "$DELETE_COUNT" -eq 0 ]; then
-                    echo "Nothing to delete. Exiting."
+                    echo "Nothing to delete."
                     exit 0
                   fi
 
-                  echo "----------------------------------------"
+                  cat delete.txt
 
                   if [ "$DRY_RUN" = "true" ]; then
-                    echo "[DRY RUN] No files will be deleted."
+                    echo "[DRY RUN] Skipping deletion."
                     exit 0
                   fi
 
-                  echo "Deleting old snapshot builds..."
+                  # -----------------------------
+                  # Parallel deletion with retry
+                  # -----------------------------
+                  delete_file() {
+                    FILE="$1"
 
-                  while read -r FILE; do
-                    echo "Deleting $FILE"
-                    curl -s -u $ART_USER:$ART_PASS \
-                      -X DELETE "$ART_URL/$REPO/$FILE"
-                  done < delete.txt
+                    for i in $(seq 1 $RETRIES); do
+                      echo "Deleting $FILE (attempt $i)"
+
+                      if curl -sf -u "$ART_USER:$ART_PASS" \
+                        -X DELETE "$ART_URL/$REPO/$FILE"; then
+                        echo "Deleted $FILE"
+                        return 0
+                      fi
+
+                      sleep $((i * 2))
+                    done
+
+                    echo "FAILED to delete $FILE" >&2
+                    return 1
+                  }
+
+                  export -f delete_file
+                  export ART_USER ART_PASS ART_URL REPO RETRIES
+
+                  echo "Starting parallel deletion..."
+
+                  cat delete.txt | grep -v '^$' | \
+                    xargs -I {} -P $MAX_PARALLEL sh -c 'delete_file "$@"' _ {}
 
                   echo "Cleanup complete."
 
