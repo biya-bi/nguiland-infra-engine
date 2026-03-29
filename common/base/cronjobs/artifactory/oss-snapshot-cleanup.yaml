@@ -1,0 +1,145 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: artifactory-oss-snapshot-cleanup
+  namespace: infra
+spec:
+  schedule: "0 3 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: cleanup
+              image: alpine:3.23
+              env:
+                - name: ART_URL
+                  value: "http://artifactory-oss:8082/artifactory"
+                - name: ART_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: artifactory-oss
+                      key: user
+                - name: ART_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: artifactory-oss
+                      key: password
+                - name: REPO
+                  value: "libs-snapshot"
+                - name: KEEP
+                  value: "5"
+                - name: DRY_RUN
+                  value: "false"
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -euo pipefail
+
+                  echo "=== Artifactory Snapshot Cleanup (Dry Run: $DRY_RUN) ==="
+
+                  # Install dependencies
+                  apk add --no-cache curl jq gawk
+
+                  echo "Using repo: $REPO"
+                  echo "Keeping latest $KEEP builds per artifact"
+
+                  echo "Querying snapshot artifacts..."
+
+                  QUERY=$(cat <<EOF
+                  items.find({
+                    "repo": "$REPO"
+                  }).include("repo","path","name","created")
+                  EOF
+                  )
+
+                  curl -s -u $ART_USER:$ART_PASS \
+                    -X POST "$ART_URL/api/search/aql" \
+                    -H "Content-Type: text/plain" \
+                    -d "$QUERY" > result.json
+
+                  echo "---- Result summary ----"
+                  jq '.results | length' result.json || true
+                  echo "------------------------"
+
+                  # --- Detect API errors ---
+                  if jq -e '.errors' result.json > /dev/null; then
+                    echo "ERROR: Artifactory returned errors"
+                    jq . result.json
+                    exit 1
+                  fi
+
+                  echo "Grouping by artifact + build..."
+
+                  jq -r '.results // [] | .[] | "\(.path)|\(.name)|\(.created)"' result.json \
+                  | gawk -F'|' '
+                  function extract_build(name) {
+                    if (match(name, /[0-9]{8}\.[0-9]{6}-[0-9]+/)) {
+                      return substr(name, RSTART, RLENGTH)
+                    }
+                    return "UNKNOWN"
+                  }
+                  {
+                    path=$1
+                    name=$2
+                    created=$3
+
+                    # Only process snapshot files
+                    if (path !~ /SNAPSHOT/) next
+
+                    build=extract_build(name)
+                    key=path
+
+                    print key "|" build "|" path "/" name "|" created
+                  }' \
+                  | sort -t'|' -k1,1 -k2,2 -k4,4r \
+                  | gawk -F'|' -v KEEP=$KEEP '
+                  {
+                    key=$1
+                    build=$2
+                    file=$3
+
+                    build_key=key "|" build
+
+                    if (!(build_key in seen)) {
+                      seen[build_key]=1
+                      build_count[key]++
+                    }
+
+                    if (build_count[key] > KEEP) {
+                      print file
+                    }
+                  }' > delete.txt
+
+                  echo "----------------------------------------"
+                  echo "Preview parsed data (first 20 entries):"
+                  head -n 20 delete.txt || true
+                  echo "----------------------------------------"
+
+                  DELETE_COUNT=$(wc -l < delete.txt)
+
+                  echo "Total files marked for deletion: $DELETE_COUNT"
+
+                  if [ "$DELETE_COUNT" -eq 0 ]; then
+                    echo "Nothing to delete. Exiting."
+                    exit 0
+                  fi
+
+                  echo "----------------------------------------"
+
+                  if [ "$DRY_RUN" = "true" ]; then
+                    echo "[DRY RUN] No files will be deleted."
+                    exit 0
+                  fi
+
+                  echo "Deleting old snapshot builds..."
+
+                  while read -r FILE; do
+                    echo "Deleting $FILE"
+                    curl -s -u $ART_USER:$ART_PASS \
+                      -X DELETE "$ART_URL/$REPO/$FILE"
+                  done < delete.txt
+
+                  echo "Cleanup complete."
+
+          restartPolicy: OnFailure
