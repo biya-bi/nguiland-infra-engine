@@ -5,10 +5,13 @@ metadata:
   namespace: infra
 spec:
   schedule: "0 * * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
         spec:
+          ttlSecondsAfterFinished: 3300
           containers:
             - name: cleanup
               image: alpine:3.23
