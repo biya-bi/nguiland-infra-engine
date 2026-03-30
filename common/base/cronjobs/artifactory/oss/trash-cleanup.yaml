@@ -1,0 +1,99 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: artifactory-oss-trash-cleanup
+  namespace: infra
+spec:
+  schedule: "0 */6 * * *"
+
+  concurrencyPolicy: Forbid
+
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 1800
+      backoffLimit: 1
+
+      template:
+        spec:
+          restartPolicy: OnFailure
+
+          containers:
+            - name: cleanup
+              image: alpine:3.23
+
+              env:
+                - name: ART_URL
+                  value: "http://artifactory-oss:8082/artifactory"
+                - name: ART_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: artifactory-oss
+                      key: user
+                - name: ART_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: artifactory-oss
+                      key: password
+                - name: MAX_TRASH_AGE_HOURS
+                  value: "48"
+
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -euo pipefail
+
+                  apk add --no-cache curl jq
+
+                  echo "=== Safe Trash Cleanup ==="
+
+                  NOW=$(date +%s)
+                  CUTOFF=$((NOW - MAX_TRASH_AGE_HOURS * 3600))
+
+                  echo "Fetching trash items..."
+
+                  curl -sS --fail \
+                    -u "$ART_USER:$ART_PASS" \
+                    "$ART_URL/api/trash" > trash.json
+
+                  TOTAL=$(jq '.files | length' trash.json)
+                  echo "Total trash items: $TOTAL"
+
+                  if [ "$TOTAL" -eq 0 ]; then
+                    echo "Trash is empty."
+                    exit 0
+                  fi
+
+                  echo "Filtering old trash items..."
+
+                  jq -r --argjson cutoff "$CUTOFF" '
+                    .files[]
+                    | .deleted_epoch = (
+                        try (.deleted | split(".")[0] + "Z" | fromdateiso8601)
+                        catch 0
+                      )
+                    | select(.deleted_epoch < $cutoff)
+                    | .repo + "/" + .path + "/" + .name
+                  ' trash.json > delete.txt
+
+                  COUNT=$(grep -c . delete.txt || true)
+                  echo "Trash items to delete: $COUNT"
+
+                  if [ "$COUNT" -eq 0 ]; then
+                    echo "Nothing to delete."
+                    exit 0
+                  fi
+
+                  cat delete.txt
+
+                  echo "Deleting old trash..."
+
+                  while read -r item; do
+                    curl -sS --fail \
+                      -u "$ART_USER:$ART_PASS" \
+                      -X DELETE "$ART_URL/api/trash/$item"
+                  done < delete.txt
+
+                  echo "Trash cleanup complete."
