@@ -190,11 +190,21 @@ spec:
                     }
                     return "UNKNOWN"
                   }
+                  function is_complete(key) {
+                    return file_count[key] >= 2
+                  }
                   {
                     path=$1
                     name=$2
                     epoch=$3
+
+                    # SAFETY: skip invalid timestamps
+                    if (epoch == 0) next
+
                     build=extract_build(name)
+
+                    # SAFETY: skip malformed builds
+                    if (build == "UNKNOWN") next
 
                     key=path "|" build
 
@@ -204,6 +214,7 @@ spec:
                       build_order[path, build_count[path]] = build
                     }
 
+                    file_count[key]++
                     files[key] = files[key] "\n" path "/" name
 
                     if (epoch > build_time[key]) {
@@ -212,14 +223,17 @@ spec:
                   }
                   END {
                     for (p in build_count) {
-                      # sort builds by recency (simple insertion)
+
+                      # SAFETY: do nothing if too few builds
+                      if (build_count[p] <= KEEP) continue
+
+                      # sort builds by recency
                       for (i=1; i<=build_count[p]; i++) {
-                        b=build_order[p,i]
-                        bt=build_time[p "|" b]
                         for (j=i+1; j<=build_count[p]; j++) {
+                          b1=build_order[p,i]
                           b2=build_order[p,j]
-                          bt2=build_time[p "|" b2]
-                          if (bt2 > bt) {
+
+                          if (build_time[p "|" b2] > build_time[p "|" b1]) {
                             tmp=build_order[p,i]
                             build_order[p,i]=build_order[p,j]
                             build_order[p,j]=tmp
@@ -234,10 +248,18 @@ spec:
                         if (i == 1) continue   # ALWAYS keep latest build
                         if (i <= KEEP) continue
 
+                        # SAFETY: skip incomplete builds
+                        if (!is_complete(key)) continue
+
+                        # SAFETY: respect age threshold
+                        if (build_time[key] > '"$CUTOFF_EPOCH"') continue
+
                         print files[key]
                       }
                     }
-                  }' > delete.txt
+                  }' \
+                  | grep -v '^$' \
+                  | sort -u > delete.txt   # SAFETY: deduplicate
 
                   DELETE_COUNT=$(grep -c . delete.txt || true)
                   echo "Files to delete: $DELETE_COUNT"
@@ -264,6 +286,13 @@ spec:
                   cat delete.txt | grep -v '^$' | \
                     xargs -I {} -P $MAX_PARALLEL sh -c '
                       FILE="$1"
+
+                      # SAFETY: avoid dangerous deletes
+                      if echo "$FILE" | grep -q "\.\."; then
+                        echo "Skipping suspicious path: $FILE"
+                        exit 0
+                      fi
+
                       for i in $(seq 1 '"$RETRIES"'); do
                         echo "Deleting $FILE (attempt $i)"
                         if curl -sf --connect-timeout 10 --max-time 60 \
