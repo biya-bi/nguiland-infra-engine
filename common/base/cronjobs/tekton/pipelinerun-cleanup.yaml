@@ -28,8 +28,14 @@ spec:
                   memory: "256Mi"
               
               env:
+                - name: NAMESPACE
+                  value: "infra"
+                - name: MIN_AGE_MINUTES
+                  value: "60"
                 - name: DRY_RUN
                   value: "false"
+                - name: PARALLELISM
+                  value: "5"
 
               command:
                 - /bin/bash
@@ -37,10 +43,42 @@ spec:
                 - |
                   set -uo pipefail
 
-                  NAMESPACE="infra"
-                  MIN_AGE_MINUTES=60
-                  DRY_RUN=${DRY_RUN:-true}
-                  PARALLELISM=5
+                  # Validate required env vars (fail fast)
+                  : "${NAMESPACE:?ERROR: NAMESPACE is required}"
+                  : "${MIN_AGE_MINUTES:?ERROR: MIN_AGE_MINUTES is required}"
+                  : "${DRY_RUN:?ERROR: DRY_RUN is required}"
+                  : "${PARALLELISM:?ERROR: PARALLELISM is required}"
+
+                  # Validate MIN_AGE_MINUTES is a number
+                  if ! [[ "$MIN_AGE_MINUTES" =~ ^[0-9]+$ ]]; then
+                    echo "ERROR: MIN_AGE_MINUTES must be a positive integer (got: $MIN_AGE_MINUTES)"
+                    exit 1
+                  fi
+
+                  # Validate PARALLELISM is a number
+                  if ! [[ "$PARALLELISM" =~ ^[0-9]+$ ]]; then
+                    echo "ERROR: PARALLELISM must be an integer (got: $PARALLELISM)"
+                    exit 1
+                  fi
+
+                  # Enforce parallelism range
+                  MIN_PARALLELISM=1
+                  MAX_PARALLELISM=20
+
+                  if [ "$PARALLELISM" -lt "$MIN_PARALLELISM" ] || [ "$PARALLELISM" -gt "$MAX_PARALLELISM" ]; then
+                    echo "ERROR: PARALLELISM must be between $MIN_PARALLELISM and $MAX_PARALLELISM (got: $PARALLELISM)"
+                    exit 1
+                  fi
+
+                  # Validate DRY_RUN is true or false
+                  case "$DRY_RUN" in
+                    true|false)
+                      ;;
+                    *)
+                      echo "ERROR: DRY_RUN must be 'true' or 'false' (got: $DRY_RUN)"
+                      exit 1
+                      ;;
+                  esac
 
                   log() {
                       echo "[$(date)] $*"
