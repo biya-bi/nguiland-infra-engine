@@ -66,8 +66,6 @@ spec:
                   value: "libs-snapshot-local"
                 - name: KEEP
                   value: "5"
-                - name: MAX_SNAPSHOTS
-                  value: "20"
                 - name: MAX_AGE_HOURS
                   value: "24"
                 - name: DRY_RUN
@@ -152,28 +150,13 @@ spec:
                   fi
 
                   # -----------------------------
-                  # Detect offenders
+                  # Detect offenders (Always include all, ignore metadata)
                   # -----------------------------
-                  jq -r --argjson cutoff "$CUTOFF_EPOCH" '
-                    .results
-                    | sort_by(.path)
-                    | group_by(.path)
-                    | map({
-                        path: .[0].path,
-                        count: length,
-                        oldest: (
-                          map(
-                            try (.created | split(".")[0] + "Z" | fromdateiso8601)
-                            catch 0
-                          ) | min
-                        )
-                      })
-                    | map(select(
-                        (.count > '"$MAX_SNAPSHOTS"') or
-                        (.oldest < $cutoff)
-                      ))
-                    | .[].path
-                  ' result.json > offenders.txt
+                  jq -r '
+                    .results[]
+                    | select(.name != "maven-metadata.xml")
+                    | .path
+                  ' result.json | sort -u > offenders.txt
 
                   OFFENDER_COUNT=$(grep -c . offenders.txt || true)
                   echo "Artifacts requiring cleanup: $OFFENDER_COUNT"
@@ -192,6 +175,7 @@ spec:
                   # -----------------------------
                   jq -r --rawfile offenders offenders.txt '
                     .results[]
+                    | select(.name != "maven-metadata.xml")
                     | select(.path as $p | ($offenders | split("\n") | map(select(length > 0)) | index($p)))
                     | .created_epoch = (
                         try (.created | split(".")[0] + "Z" | fromdateiso8601)
