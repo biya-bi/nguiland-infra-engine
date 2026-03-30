@@ -5,17 +5,50 @@ metadata:
   namespace: infra
 spec:
   schedule: "0 * * * *"
+
+  # Prevent overlapping runs
+  concurrencyPolicy: Forbid
+
+  # Skip backlog executions
+  startingDeadlineSeconds: 1800
+
+  # Explicit
+  suspend: false
+
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
+
   jobTemplate:
     spec:
+      # Cleanup finished Jobs after ~55 minutes
       ttlSecondsAfterFinished: 3300
+
+      # Limit retries of failed Jobs
+      backoffLimit: 1
+
       template:
         spec:
           restartPolicy: OnFailure
+
+          # Kill job if stuck >30min
+          activeDeadlineSeconds: 1800
+
+          # Graceful shutdown
+          terminationGracePeriodSeconds: 30
+
           containers:
             - name: cleanup
               image: alpine:3.23
+
+              # Resource control
+              resources:
+                requests:
+                  cpu: "50m"
+                  memory: "64Mi"
+                limits:
+                  cpu: "500m"
+                  memory: "256Mi"
+
               env:
                 - name: ART_URL
                   value: "http://artifactory-oss:8082/artifactory"
@@ -43,6 +76,7 @@ spec:
                   value: "5"
                 - name: RETRIES
                   value: "3"
+
               command: ["/bin/sh", "-c"]
               args:
                 - |
@@ -66,7 +100,8 @@ spec:
                   EOF
                   )
 
-                  curl -s -u "$ART_USER:$ART_PASS" \
+                  curl -s --connect-timeout 10 --max-time 60 \
+                    -u "$ART_USER:$ART_PASS" \
                     -X POST "$ART_URL/api/search/aql" \
                     -H "Content-Type: text/plain" \
                     -d "$QUERY" > result.json
@@ -230,25 +265,6 @@ spec:
                   # -----------------------------
                   # Parallel deletion with retry
                   # -----------------------------
-                  delete_file() {
-                    FILE="$1"
-
-                    for i in $(seq 1 $RETRIES); do
-                      echo "Deleting $FILE (attempt $i)"
-
-                      if curl -sf -u "$ART_USER:$ART_PASS" \
-                        -X DELETE "$ART_URL/$REPO/$FILE"; then
-                        echo "Deleted $FILE"
-                        return 0
-                      fi
-
-                      sleep $((i * 2))
-                    done
-
-                    echo "FAILED to delete $FILE" >&2
-                    return 1
-                  }
-
                   echo "Starting parallel deletion..."
 
                   cat delete.txt | grep -v '^$' | \
@@ -256,7 +272,9 @@ spec:
                       FILE="$1"
                       for i in $(seq 1 '"$RETRIES"'); do
                         echo "Deleting $FILE (attempt $i)"
-                        if curl -sf -u "'"$ART_USER:$ART_PASS"'" -X DELETE "'"$ART_URL/$REPO"'/$FILE"; then
+                        if curl -sf --connect-timeout 10 --max-time 60 \
+                          -u "'"$ART_USER:$ART_PASS"'" \
+                          -X DELETE "'"$ART_URL/$REPO"'/$FILE"; then
                           echo "Deleted $FILE"
                           exit 0
                         fi
@@ -267,4 +285,3 @@ spec:
                     ' _ {}
 
                   echo "Cleanup complete."
-
