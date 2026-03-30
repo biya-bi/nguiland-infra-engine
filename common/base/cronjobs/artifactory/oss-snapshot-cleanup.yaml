@@ -12,6 +12,7 @@ spec:
       ttlSecondsAfterFinished: 3300
       template:
         spec:
+          restartPolicy: OnFailure
           containers:
             - name: cleanup
               image: alpine:3.23
@@ -42,7 +43,6 @@ spec:
                   value: "5"
                 - name: RETRIES
                   value: "3"
-
               command: ["/bin/sh", "-c"]
               args:
                 - |
@@ -268,4 +268,3 @@ spec:
 
                   echo "Cleanup complete."
 
-          restartPolicy: OnFailure
