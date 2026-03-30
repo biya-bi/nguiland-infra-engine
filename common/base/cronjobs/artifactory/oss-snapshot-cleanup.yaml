@@ -9,9 +9,9 @@ spec:
   failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 3300
       template:
         spec:
-          ttlSecondsAfterFinished: 3300
           containers:
             - name: cleanup
               image: alpine:3.23
