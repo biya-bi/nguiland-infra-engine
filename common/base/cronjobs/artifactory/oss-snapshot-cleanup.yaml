@@ -107,6 +107,15 @@ spec:
                     -d "$QUERY" > result.json
 
                   # -----------------------------
+                  # Validate JSON response
+                  # -----------------------------
+                  if ! jq empty result.json >/dev/null 2>&1; then
+                    echo "ERROR: Artifactory did not return valid JSON"
+                    head -n 20 result.json
+                    exit 1
+                  fi
+
+                  # -----------------------------
                   # Validate API response
                   # -----------------------------
                   if jq -e '.errors' result.json > /dev/null; then
@@ -171,7 +180,12 @@ spec:
                     exit 0
                   fi
 
+                  # -----------------------------
+                  # Clearer debug output
+                  # -----------------------------
+                  echo "---- DEBUG: offender paths ----"
                   cat offenders.txt
+                  echo "--------------------------------"
 
                   # -----------------------------
                   # Build-aware cleanup
@@ -244,6 +258,26 @@ spec:
                       }
 
                       print files[k]
+                    }
+                  }' \
+                  | awk -v KEEP=$KEEP -F/ '
+                  {
+                    # -----------------------------
+                    # Artifact-level grouping
+                    # -----------------------------
+                    key=$1"/"$2"/"$3
+
+                    artifacts[key]++
+                    files[key, artifacts[key]] = $0
+                  }
+                  END {
+                    for (k in artifacts) {
+                      count = artifacts[k]
+
+                      # Keep only latest KEEP entries
+                      for (i = KEEP + 1; i <= count; i++) {
+                        print files[k, i]
+                      }
                     }
                   }' > delete.txt
 
