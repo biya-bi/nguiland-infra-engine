@@ -100,18 +100,26 @@ spec:
                   EOF
                   )
 
-                  curl -s --connect-timeout 10 --max-time 60 \
+                  echo "Running AQL query..."
+
+                  curl -sS --fail --connect-timeout 10 --max-time 60 \
                     -u "$ART_USER:$ART_PASS" \
                     -X POST "$ART_URL/api/search/aql" \
                     -H "Content-Type: text/plain" \
-                    -d "$QUERY" > result.json
+                    -d "$QUERY" > result.json || {
+                      echo "ERROR: curl failed"
+                      exit 1
+                    }
+
+                  echo "---- RAW RESPONSE (first 20 lines) ----"
+                  head -n 20 result.json
+                  echo "---------------------------------------"
 
                   # -----------------------------
                   # Validate JSON response
                   # -----------------------------
                   if ! jq empty result.json >/dev/null 2>&1; then
                     echo "ERROR: Artifactory did not return valid JSON"
-                    head -n 20 result.json
                     exit 1
                   fi
 
@@ -143,10 +151,8 @@ spec:
                     exit 0
                   fi
 
-                  echo "---- Timestamp Parse Errors (if any) ----"
-
                   # -----------------------------
-                  # Detect offenders (threshold OR age)
+                  # Detect offenders
                   # -----------------------------
                   jq -r --argjson cutoff "$CUTOFF_EPOCH" '
                     .results
@@ -158,10 +164,7 @@ spec:
                         oldest: (
                           map(
                             try (.created | split(".")[0] + "Z" | fromdateiso8601)
-                            catch (
-                              ("PARSE_ERROR|" + .path + "/" + .name + "|" + .created) | @stderr
-                              | 0
-                            )
+                            catch 0
                           ) | min
                         )
                       })
@@ -180,9 +183,6 @@ spec:
                     exit 0
                   fi
 
-                  # -----------------------------
-                  # Clearer debug output
-                  # -----------------------------
                   echo "---- DEBUG: offender paths ----"
                   cat offenders.txt
                   echo "--------------------------------"
@@ -195,88 +195,21 @@ spec:
                     | select(.path as $p | ($offenders | split("\n") | map(select(length > 0)) | index($p)))
                     | .created_epoch = (
                         try (.created | split(".")[0] + "Z" | fromdateiso8601)
-                        catch (
-                          ("PARSE_ERROR|" + .path + "/" + .name + "|" + .created) | @stderr
-                          | 0
-                        )
+                        catch 0
                       )
                     | "\(.path)|\(.name)|\(.created_epoch)"
                   ' result.json \
-                  | gawk -F'|' '
-                  function extract_build(name) {
-                    if (match(name, /[0-9]{8}\.[0-9]{6}-[0-9]+/)) {
-                      return substr(name, RSTART, RLENGTH)
-                    }
-                    return "UNKNOWN"
-                  }
-                  {
-                    print $1 "|" extract_build($2) "|" $1 "|" $2 "|" $3
-                  }' \
-                  | sort -t'|' -k1,1 -k2,2 -k5,5nr \
-                  | gawk -F'|' -v KEEP=$KEEP -v CUTOFF=$CUTOFF_EPOCH '
+                  | sort -t'|' -k1,1 -k3,3nr \
+                  | awk -F'|' -v KEEP=$KEEP '
                   {
                     key=$1
-                    build=$2
-                    path=$3
-                    name=$4
-                    epoch=$5
-
-                    build_key=key "|" build
-
-                    if (!(build_key in seen)) {
-                      seen[build_key]=1
-                      build_count[key]++
-                      build_order[key, build_count[key]] = build
-                    }
-
-                    files[build_key] = files[build_key] "\n" path "/" name
-
-                    if (epoch > build_time[build_key]) {
-                      build_time[build_key] = epoch
-                    }
+                    files[key]++
+                    data[key, files[key]]=$1"/"$2
                   }
                   END {
-                    for (k in seen) {
-                      split(k, parts, "|")
-                      key = parts[1]
-                      build = parts[2]
-
-                      idx = -1
-                      for (i = 1; i <= build_count[key]; i++) {
-                        if (build_order[key, i] == build) {
-                          idx = i
-                          break
-                        }
-                      }
-
-                      if (idx == 1) continue
-                      if (idx <= KEEP) continue
-
-                      if (build_time[k] < CUTOFF) {
-                        print files[k]
-                        continue
-                      }
-
-                      print files[k]
-                    }
-                  }' \
-                  | awk -v KEEP=$KEEP -F/ '
-                  {
-                    # -----------------------------
-                    # Artifact-level grouping
-                    # -----------------------------
-                    key=$1"/"$2"/"$3
-
-                    artifacts[key]++
-                    files[key, artifacts[key]] = $0
-                  }
-                  END {
-                    for (k in artifacts) {
-                      count = artifacts[k]
-
-                      # Keep only latest KEEP entries
-                      for (i = KEEP + 1; i <= count; i++) {
-                        print files[k, i]
+                    for (k in files) {
+                      for (i = KEEP + 1; i <= files[k]; i++) {
+                        print data[k, i]
                       }
                     }
                   }' > delete.txt
@@ -289,7 +222,9 @@ spec:
                     exit 0
                   fi
 
+                  echo "---- DEBUG: files selected for deletion ----"
                   cat delete.txt
+                  echo "--------------------------------------------"
 
                   if [ "$DRY_RUN" = "true" ]; then
                     echo "[DRY RUN] Skipping deletion."
