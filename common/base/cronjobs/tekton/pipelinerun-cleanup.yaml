@@ -36,6 +36,8 @@ spec:
                   value: "false"
                 - name: PARALLELISM
                   value: "5"
+                - name: MAX_DELETIONS
+                  value: "50"
 
               command:
                 - /bin/bash
@@ -48,6 +50,7 @@ spec:
                   : "${MIN_AGE_MINUTES:?ERROR: MIN_AGE_MINUTES is required}"
                   : "${DRY_RUN:?ERROR: DRY_RUN is required}"
                   : "${PARALLELISM:?ERROR: PARALLELISM is required}"
+                  : "${MAX_DELETIONS:?ERROR: MAX_DELETIONS is required}"
 
                   # Validate MIN_AGE_MINUTES is a number
                   if ! [[ "$MIN_AGE_MINUTES" =~ ^[0-9]+$ ]]; then
@@ -101,6 +104,7 @@ spec:
                   DELETED=0
                   SKIPPED=0
                   FAILED=0
+                  SELECTED=0
 
                   TO_DELETE=""
 
@@ -132,17 +136,24 @@ spec:
                           continue
                       fi
 
+                      # MAX_DELETIONS enforcement
+                      if [ "$SELECTED" -ge "$MAX_DELETIONS" ]; then
+                          log "Reached MAX_DELETIONS=$MAX_DELETIONS, stopping selection"
+                          break
+                      fi
+
                       if [ "$DRY_RUN" = "true" ]; then
                           log "[DRY-RUN] Would delete: $NAME (${AGE_MINUTES}m old)"
                           continue
                       fi
 
                       TO_DELETE="${TO_DELETE}${NAME}\n"
+                      SELECTED=$((SELECTED + 1))
 
                   done <<< "$RESULTS"
 
                   if [ "$DRY_RUN" = "false" ] && [ -n "$TO_DELETE" ]; then
-                      log "Deleting PipelineRuns with parallelism=$PARALLELISM"
+                      log "Deleting PipelineRuns with parallelism=$PARALLELISM (max=$MAX_DELETIONS)"
 
                       echo -e "$TO_DELETE" | xargs -P "$PARALLELISM" -I {} sh -c '
                           if kubectl delete pipelinerun "{}" -n "'"$NAMESPACE"'" --ignore-not-found=true >/dev/null 2>&1; then
@@ -159,5 +170,5 @@ spec:
                       done
                   fi
 
-                  log "Summary: processed=$COUNT deleted=$DELETED skipped=$SKIPPED failed=$FAILED"
+                  log "Summary: processed=$COUNT selected=$SELECTED deleted=$DELETED skipped=$SKIPPED failed=$FAILED"
                   log "Cleanup complete"
