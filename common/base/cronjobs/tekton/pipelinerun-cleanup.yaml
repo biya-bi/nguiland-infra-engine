@@ -1,0 +1,114 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tekton-pipelinerun-cleanup
+  namespace: infra
+spec:
+  schedule: "0 * * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          ttlSecondsAfterFinished: 3300
+          serviceAccountName: tekton-pipeline
+          restartPolicy: Never
+          containers:
+            - name: cleanup
+              image: docker.io/bitnami/kubectl@sha256:f6dd048d1c14d89ede9636cd6bee0ff0238579c33ea1e51b2fb1a1cfd62ea246
+              env:
+                - name: DRY_RUN
+                  value: "false"
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  set -uo pipefail
+
+                  NAMESPACE="infra"
+                  MIN_AGE_MINUTES=60
+                  DRY_RUN=${DRY_RUN:-true}
+                  PARALLELISM=5
+
+                  log() {
+                      echo "[$(date)] $*"
+                  }
+
+                  log "Starting cleanup (dry-run=$DRY_RUN)"
+
+                  NOW=$(date +%s)
+
+                  RESULTS=$(kubectl get pipelineruns -n "$NAMESPACE" \
+                    -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.creationTimestamp}{" "}{.status.conditions[0].status}{"\n"}{end}' 2>/dev/null || true)
+
+                  if [ -z "$RESULTS" ]; then
+                      log "No PipelineRuns found"
+                      log "Cleanup complete"
+                      exit 0
+                  fi
+
+                  COUNT=0
+                  DELETED=0
+                  SKIPPED=0
+                  FAILED=0
+
+                  TO_DELETE=""
+
+                  while IFS= read -r LINE; do
+                      NAME=$(echo "$LINE" | awk '{print $1}')
+                      CREATED=$(echo "$LINE" | awk '{print $2}')
+                      STATUS=$(echo "$LINE" | awk '{print $3}')
+
+                      if [ -z "$NAME" ] || [ -z "$CREATED" ] || [ -z "$STATUS" ]; then
+                          log "Skipping invalid entry: $LINE"
+                          continue
+                      fi
+
+                      if [ "$STATUS" != "True" ] && [ "$STATUS" != "False" ]; then
+                          continue
+                      fi
+
+                      if ! CREATED_TS=$(date -d "$CREATED" +%s 2>/dev/null); then
+                          log "Skipping $NAME (invalid timestamp)"
+                          continue
+                      fi
+
+                      AGE_MINUTES=$(( (NOW - CREATED_TS) / 60 ))
+                      COUNT=$((COUNT + 1))
+
+                      if [ "$AGE_MINUTES" -lt "$MIN_AGE_MINUTES" ]; then
+                          log "Skipping $NAME (${AGE_MINUTES}m old)"
+                          SKIPPED=$((SKIPPED + 1))
+                          continue
+                      fi
+
+                      if [ "$DRY_RUN" = "true" ]; then
+                          log "[DRY-RUN] Would delete: $NAME (${AGE_MINUTES}m old)"
+                          continue
+                      fi
+
+                      TO_DELETE="${TO_DELETE}${NAME}\n"
+
+                  done <<< "$RESULTS"
+
+                  if [ "$DRY_RUN" = "false" ] && [ -n "$TO_DELETE" ]; then
+                      log "Deleting PipelineRuns with parallelism=$PARALLELISM"
+
+                      echo -e "$TO_DELETE" | xargs -P "$PARALLELISM" -I {} sh -c '
+                          if kubectl delete pipelinerun "{}" -n "'"$NAMESPACE"'" --ignore-not-found=true >/dev/null 2>&1; then
+                              echo "Deleted: {}"
+                          else
+                              echo "FAILED: {}"
+                          fi
+                      ' | while read -r LINE; do
+                          log "$LINE"
+                          case "$LINE" in
+                              Deleted:*) DELETED=$((DELETED + 1)) ;;
+                              FAILED:*) FAILED=$((FAILED + 1)) ;;
+                          esac
+                      done
+                  fi
+
+                  log "Summary: processed=$COUNT deleted=$DELETED skipped=$SKIPPED failed=$FAILED"
+                  log "Cleanup complete"
