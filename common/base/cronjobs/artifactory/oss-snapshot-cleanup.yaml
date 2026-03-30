@@ -183,17 +183,58 @@ spec:
                       )
                     | "\(.path)|\(.name)|\(.created_epoch)"
                   ' result.json \
-                  | sort -t'|' -k1,1 -k3,3nr \
-                  | awk -F'|' -v KEEP=$KEEP '
+                  | gawk -F'|' '
+                  function extract_build(name) {
+                    if (match(name, /[0-9]{8}\.[0-9]{6}-[0-9]+/)) {
+                      return substr(name, RSTART, RLENGTH)
+                    }
+                    return "UNKNOWN"
+                  }
                   {
-                    key=$1
-                    files[key]++
-                    data[key, files[key]]=$1"/"$2
+                    path=$1
+                    name=$2
+                    epoch=$3
+                    build=extract_build(name)
+
+                    key=path "|" build
+
+                    if (!(key in seen)) {
+                      seen[key]=1
+                      build_count[path]++
+                      build_order[path, build_count[path]] = build
+                    }
+
+                    files[key] = files[key] "\n" path "/" name
+
+                    if (epoch > build_time[key]) {
+                      build_time[key] = epoch
+                    }
                   }
                   END {
-                    for (k in files) {
-                      for (i = KEEP + 1; i <= files[k]; i++) {
-                        print data[k, i]
+                    for (p in build_count) {
+                      # sort builds by recency (simple insertion)
+                      for (i=1; i<=build_count[p]; i++) {
+                        b=build_order[p,i]
+                        bt=build_time[p "|" b]
+                        for (j=i+1; j<=build_count[p]; j++) {
+                          b2=build_order[p,j]
+                          bt2=build_time[p "|" b2]
+                          if (bt2 > bt) {
+                            tmp=build_order[p,i]
+                            build_order[p,i]=build_order[p,j]
+                            build_order[p,j]=tmp
+                          }
+                        }
+                      }
+
+                      for (i=1; i<=build_count[p]; i++) {
+                        build=build_order[p,i]
+                        key=p "|" build
+
+                        if (i == 1) continue   # ALWAYS keep latest build
+                        if (i <= KEEP) continue
+
+                        print files[key]
                       }
                     }
                   }' > delete.txt
