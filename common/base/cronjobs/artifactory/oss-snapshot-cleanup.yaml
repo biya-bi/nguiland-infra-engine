@@ -5,7 +5,7 @@ metadata:
   namespace: infra
 spec:
   schedule: "0 * * * *"
-  successfulJobsHistoryLimit: 3
+  successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
