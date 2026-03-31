@@ -192,9 +192,6 @@ spec:
                     }
                     return "UNKNOWN"
                   }
-                  function is_complete(key) {
-                    return file_count[key] >= 2
-                  }
                   {
                     path=$1
                     name=$2
@@ -252,9 +249,6 @@ spec:
 
                         if (i == 1) continue   # ALWAYS keep latest build
                         if (i <= KEEP) continue
-
-                        # SAFETY: skip incomplete builds
-                        if (!is_complete(key)) continue
 
                         # SAFETY: respect age threshold
                         if (build_time[key] > '"$CUTOFF_EPOCH"') continue
