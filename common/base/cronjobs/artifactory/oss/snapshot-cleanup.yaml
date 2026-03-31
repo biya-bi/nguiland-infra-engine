@@ -67,7 +67,7 @@ spec:
                 - name: KEEP
                   value: "5"
                 - name: MAX_AGE_HOURS
-                  value: "24"
+                  value: "6"
                 - name: DRY_RUN
                   value: "false"
                 - name: MAX_PARALLEL
