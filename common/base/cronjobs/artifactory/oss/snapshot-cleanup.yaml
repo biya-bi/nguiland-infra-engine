@@ -226,9 +226,6 @@ spec:
                   END {
                     for (p in build_count) {
 
-                      # SAFETY: do nothing if too few builds
-                      if (build_count[p] <= KEEP) continue
-
                       # sort builds by recency
                       for (i=1; i<=build_count[p]; i++) {
                         for (j=i+1; j<=build_count[p]; j++) {
@@ -243,17 +240,35 @@ spec:
                         }
                       }
 
-                      for (i=1; i<=build_count[p]; i++) {
-                        build=build_order[p,i]
-                        key=p "|" build
+                      # Standard case: more builds than KEEP
+                      if (build_count[p] > KEEP) {
+                        for (i=1; i<=build_count[p]; i++) {
+                          build=build_order[p,i]
+                          key=p "|" build
 
-                        if (i == 1) continue   # ALWAYS keep latest build
-                        if (i <= KEEP) continue
+                          if (i == 1) continue   # NEVER delete latest build
+                          if (i <= KEEP) continue
 
-                        # SAFETY: respect age threshold
-                        if (build_time[key] > '"$CUTOFF_EPOCH"') continue
+                          # SAFETY: respect age threshold
+                          if (build_time[key] > '"$CUTOFF_EPOCH"') continue
 
-                        print files[key]
+                          print files[key]
+                        }
+                      }
+
+                      # Handle case where total builds <= KEEP
+                      else {
+                        for (i=1; i<=build_count[p]; i++) {
+                          build=build_order[p,i]
+                          key=p "|" build
+
+                          if (i == 1) continue   # NEVER delete latest build
+
+                          # SAFETY: delete ONLY if older than threshold
+                          if (build_time[key] <= '"$CUTOFF_EPOCH"') {
+                            print files[key]
+                          }
+                        }
                       }
                     }
                   }' \
