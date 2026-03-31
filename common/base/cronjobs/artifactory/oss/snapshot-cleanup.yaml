@@ -94,7 +94,7 @@ spec:
                   QUERY=$(cat <<EOF
                   items.find({
                     "repo": "$REPO",
-                    "name": {"$match": "*SNAPSHOT*"}
+                    "path": {"\$match": "*SNAPSHOT*"}
                   }).include("repo","path","name","created")
                   EOF
                   )
