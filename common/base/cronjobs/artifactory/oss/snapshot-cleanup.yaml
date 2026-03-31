@@ -24,14 +24,14 @@ spec:
       ttlSecondsAfterFinished: 3300
 
       # Limit retries of failed Jobs
-      backoffLimit: 1
+      backoffLimit: 2
 
       template:
         spec:
           restartPolicy: OnFailure
 
-          # Kill job if stuck >30min
-          activeDeadlineSeconds: 1800
+          # Kill job if stuck for more than 1h
+          activeDeadlineSeconds: 3600
 
           # Graceful shutdown
           terminationGracePeriodSeconds: 30
@@ -71,7 +71,7 @@ spec:
                 - name: DRY_RUN
                   value: "false"
                 - name: MAX_PARALLEL
-                  value: "5"
+                  value: "10"
                 - name: RETRIES
                   value: "3"
 
@@ -93,7 +93,8 @@ spec:
                   # -----------------------------
                   QUERY=$(cat <<EOF
                   items.find({
-                    "repo": "$REPO"
+                    "repo": "$REPO",
+                    "name": {"$match": "*SNAPSHOT*"}
                   }).include("repo","path","name","created")
                   EOF
                   )
