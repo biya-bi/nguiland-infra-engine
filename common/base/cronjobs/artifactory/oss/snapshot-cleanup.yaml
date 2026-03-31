@@ -172,6 +172,31 @@ spec:
                   echo "--------------------------------"
 
                   # -----------------------------
+                  # Fetch metadata-protected builds
+                  # -----------------------------
+                  echo "Fetching maven-metadata.xml to protect active builds..."
+
+                  > protected_builds.txt
+
+                  while read -r path; do
+                    META_URL="$ART_URL/$REPO/$path/maven-metadata.xml"
+
+                    if curl -sf --connect-timeout 5 --max-time 10 \
+                      -u "$ART_USER:$ART_PASS" "$META_URL" -o meta.xml; then
+
+                      BUILD=$(grep -oE '[0-9]{8}\.[0-9]{6}-[0-9]+' meta.xml | head -n 1 || true)
+
+                      if [ -n "$BUILD" ]; then
+                        echo "$path|$BUILD" >> protected_builds.txt
+                      fi
+                    fi
+                  done < offenders.txt
+
+                  echo "---- Protected builds (from metadata) ----"
+                  cat protected_builds.txt || true
+                  echo "------------------------------------------"
+
+                  # -----------------------------
                   # Build-aware cleanup
                   # -----------------------------
                   jq -r --rawfile offenders offenders.txt '
@@ -184,7 +209,18 @@ spec:
                       )
                     | "\(.path)|\(.name)|\(.created_epoch)"
                   ' result.json \
-                  | gawk -F'|' '
+                  | gawk -F'|' -v protected_file="protected_builds.txt" '
+                  function load_protected() {
+                    while ((getline line < protected_file) > 0) {
+                      split(line, parts, "|")
+                      protected[parts[1] "|" parts[2]] = 1
+                    }
+                  }
+
+                  function is_protected(key) {
+                    return (key in protected)
+                  }
+
                   function extract_build(name) {
                     if (name == "" || name == "null") return "UNKNOWN"
                     if (match(name, /[0-9]{8}\.[0-9]{6}-[0-9]+/)) {
@@ -192,6 +228,11 @@ spec:
                     }
                     return "UNKNOWN"
                   }
+
+                  BEGIN {
+                    load_protected()
+                  }
+
                   {
                     path=$1
                     name=$2
@@ -247,6 +288,7 @@ spec:
                           key=p "|" build
 
                           if (i == 1) continue   # NEVER delete latest build
+                          if (is_protected(key)) continue   # NEVER delete metadata build
                           if (i <= KEEP) continue
 
                           # SAFETY: respect age threshold
@@ -263,6 +305,7 @@ spec:
                           key=p "|" build
 
                           if (i == 1) continue   # NEVER delete latest build
+                          if (is_protected(key)) continue   # NEVER delete metadata build
 
                           # SAFETY: delete ONLY if older than threshold
                           if (build_time[key] <= '"$CUTOFF_EPOCH"') {
