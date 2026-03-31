@@ -281,19 +281,28 @@ spec:
                         }
                       }
 
+                      # --- DEBUG counters ---
+                      total = build_count[p]
+                      skipped_latest = 0
+                      skipped_protected = 0
+                      skipped_keep = 0
+                      skipped_new = 0
+                      deleted = 0
+
                       # Standard case: more builds than KEEP
                       if (build_count[p] > KEEP) {
                         for (i=1; i<=build_count[p]; i++) {
                           build=build_order[p,i]
                           key=p "|" build
 
-                          if (i == 1) continue   # NEVER delete latest build
-                          if (is_protected(key)) continue   # NEVER delete metadata build
-                          if (i <= KEEP) continue
+                          if (i == 1) { skipped_latest++; continue } # NEVER delete latest build
+                          if (is_protected(key)) { skipped_protected++; continue } # NEVER delete metadata build
+                          if (i <= KEEP) { skipped_keep++; continue }
 
                           # SAFETY: respect age threshold
-                          if (build_time[key] > '"$CUTOFF_EPOCH"') continue
+                          if (build_time[key] > '"$CUTOFF_EPOCH"') { skipped_new++; continue }
 
+                          deleted++
                           print files[key]
                         }
                       }
@@ -304,15 +313,22 @@ spec:
                           build=build_order[p,i]
                           key=p "|" build
 
-                          if (i == 1) continue   # NEVER delete latest build
-                          if (is_protected(key)) continue   # NEVER delete metadata build
+                          if (i == 1) { skipped_latest++; continue } # NEVER delete latest build
+                          if (is_protected(key)) { skipped_protected++; continue } # NEVER delete metadata build
 
                           # SAFETY: delete ONLY if older than threshold
                           if (build_time[key] <= '"$CUTOFF_EPOCH"') {
+                            deleted++
                             print files[key]
+                          } else {
+                            skipped_new++
                           }
                         }
                       }
+
+                      # --- DEBUG output per artifact ---
+                      printf("DEBUG [%s] total=%d kept_latest=%d kept_protected=%d kept_by_keep=%d kept_new=%d deleted=%d\n",
+                        p, total, skipped_latest, skipped_protected, skipped_keep, skipped_new, deleted) > "/dev/stderr"
                     }
                   }' \
                   | grep -v '^$' \
