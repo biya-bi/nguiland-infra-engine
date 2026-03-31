@@ -155,7 +155,7 @@ spec:
                   # -----------------------------
                   jq -r '
                     .results[]
-                    | select(.name != "maven-metadata.xml")
+                    | select(.name != null and .name != "" and .name != "maven-metadata.xml")
                     | .path
                   ' result.json | sort -u > offenders.txt
 
@@ -176,7 +176,7 @@ spec:
                   # -----------------------------
                   jq -r --rawfile offenders offenders.txt '
                     .results[]
-                    | select(.name != "maven-metadata.xml")
+                    | select(.name != null and .name != "" and .name != "maven-metadata.xml")
                     | select(.path as $p | ($offenders | split("\n") | map(select(length > 0)) | index($p)))
                     | .created_epoch = (
                         try (.created | split(".")[0] + "Z" | fromdateiso8601)
@@ -186,6 +186,7 @@ spec:
                   ' result.json \
                   | gawk -F'|' '
                   function extract_build(name) {
+                    if (name == "" || name == "null") return "UNKNOWN"
                     if (match(name, /[0-9]{8}\.[0-9]{6}-[0-9]+/)) {
                       return substr(name, RSTART, RLENGTH)
                     }
@@ -198,6 +199,9 @@ spec:
                     path=$1
                     name=$2
                     epoch=$3
+
+                    # SAFETY: skip empty or invalid name
+                    if (name == "" || name == "null") next
 
                     # SAFETY: skip invalid timestamps
                     if (epoch == 0) next
