@@ -12,3 +12,4 @@ resources:
 - rest.yaml
 - orm.yaml
 - dto.yaml
+- docker.yaml

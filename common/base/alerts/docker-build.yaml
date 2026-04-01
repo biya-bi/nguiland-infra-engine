@@ -1,0 +1,14 @@
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Alert
+metadata:
+  name: docker-build
+  namespace: infra
+spec:
+  providerRef:
+    name: docker-build
+  eventSeverity: info
+  eventMetadata:
+    contextDir: .
+  eventSources:
+    - kind: GitRepository
+      name: docker
