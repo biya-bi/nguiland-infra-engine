@@ -69,3 +69,14 @@ patches:
     version: v1
     kind: ClusterPolicy
     name: add-imagepullsecrets
+-  patch: |-
+    - op: replace
+      path: /spec/values/imagePullEndpoint
+      value: artifactory-jcr.infra
+    - op: replace
+      path: /spec/values/artOssUrl
+      value: http://artifactory-oss:8082/artifactory
+   target:
+     kind: HelmRelease
+     name: artifactory-oss-snapshot-cleanup
+     namespace: infra

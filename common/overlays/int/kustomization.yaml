@@ -82,3 +82,14 @@ patches:
     kind: Ingress
     name: nguiland
     namespace: infra
+-  patch: |-
+    - op: replace
+      path: /spec/values/imagePullEndpoint
+      value: int-jcr.nguiland.org
+    - op: replace
+      path: /spec/values/artOssUrl
+      value: https://int-oss.nguiland.org/artifactory
+   target:
+     kind: HelmRelease
+     name: artifactory-oss-snapshot-cleanup
+     namespace: infra
