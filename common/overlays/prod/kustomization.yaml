@@ -94,5 +94,5 @@ patches:
       value: https://oss.nguiland.org/artifactory
    target:
      kind: HelmRelease
-     name: artifactory-oss-snapshot-cleanup
+     name: artifactory-oss-.*-cleanup
      namespace: infra

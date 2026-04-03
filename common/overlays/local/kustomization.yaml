@@ -78,5 +78,5 @@ patches:
       value: http://artifactory-oss:8082/artifactory
    target:
      kind: HelmRelease
-     name: artifactory-oss-snapshot-cleanup
+     name: artifactory-oss-.*-cleanup
      namespace: infra
