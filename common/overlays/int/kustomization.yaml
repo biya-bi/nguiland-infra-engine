@@ -93,3 +93,11 @@ patches:
      kind: HelmRelease
      name: artifactory-oss-.*-cleanup
      namespace: infra
+-  patch: |-
+    - op: replace
+      path: /spec/url
+      value: oci://int-jcr.nguiland.org/docker-local
+   target:
+     kind: HelmRepository
+     name: artifactory-oci
+     namespace: infra

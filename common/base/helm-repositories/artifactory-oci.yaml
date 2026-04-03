@@ -1,0 +1,11 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: artifactory-oci
+  namespace: infra
+spec:
+  type: oci
+  url: oci://${ARTIFACTORY_JCR_URL}/docker-local # Replace ${ARTIFACTORY_JCR_URL} in overlays
+  interval: 5m
+  secretRef:
+    name: docker-config
