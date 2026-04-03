@@ -8,6 +8,7 @@ spec:
   chart:
     spec:
       chart: ./charts/artifactory/oss/trash-cleanup
+      reconcileStrategy: Revision
       sourceRef:
         kind: GitRepository
         name: nguiland-infra-helm
