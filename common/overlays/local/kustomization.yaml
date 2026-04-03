@@ -89,9 +89,6 @@ patches:
       # our local registry. In upper environments, we will have a valid certificate for the registry, so this patch
       # have not been included in other overlays.
       value: true
-    - op: replace
-      path: /spec/url
-      value: oci://artifactory-jcr.infra/docker-local
    target:
      kind: HelmRepository
      name: artifactory-oci

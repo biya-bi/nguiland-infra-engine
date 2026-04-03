@@ -5,7 +5,7 @@ metadata:
   namespace: infra
 spec:
   type: oci
-  url: oci://${ARTIFACTORY_JCR_URL}/docker-local # Replace ${ARTIFACTORY_JCR_URL} in overlays
+  url: oci://artifactory-jcr.infra.svc.cluster.local:8082/docker-local
   interval: 5m
   secretRef:
     name: docker-config
