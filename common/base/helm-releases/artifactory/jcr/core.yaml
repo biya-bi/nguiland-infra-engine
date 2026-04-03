@@ -7,7 +7,7 @@ spec:
   interval: 10m
   chart:
     spec:
-      chart: ./charts/artifactory-jcr
+      chart: ./charts/artifactory/jcr/core
       sourceRef:
         kind: GitRepository
         name: nguiland-infra-helm

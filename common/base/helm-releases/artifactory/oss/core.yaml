@@ -7,7 +7,7 @@ spec:
   interval: 10m
   chart:
     spec:
-      chart: ./charts/artifactory-oss
+      chart: ./charts/artifactory/oss/core
       sourceRef:
         kind: GitRepository
         name: nguiland-infra-helm
