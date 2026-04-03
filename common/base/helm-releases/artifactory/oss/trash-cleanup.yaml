@@ -12,5 +12,3 @@ spec:
         kind: GitRepository
         name: nguiland-infra-helm
       interval: 10m
-  values:
-    replicaCount: 1
