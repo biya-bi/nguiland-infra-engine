@@ -12,3 +12,6 @@ spec:
         kind: GitRepository
         name: nguiland-infra-helm
       interval: 10m
+  values:
+    imagePullEndpoint: artifactory-jcr.infra
+    artOssUrl: http://artifactory-oss:8082/artifactory
