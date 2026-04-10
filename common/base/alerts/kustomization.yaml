@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
 - maven-lib.yaml
 - docker-build.yaml
+- helm-chart-oci-publish.yaml

@@ -1,0 +1,15 @@
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Alert
+metadata:
+  name: helm-chart-oci-publish
+  namespace: infra
+spec:
+  providerRef:
+    name: helm-chart-oci-publish
+  eventSeverity: info
+  eventMetadata:
+    helmChartsDir: charts
+    helmRegistry: oci://artifactory-jcr.infra.svc.cluster.local:8082/docker-local
+  eventSources:
+    - kind: GitRepository
+      name: nguiland-infra-helm
