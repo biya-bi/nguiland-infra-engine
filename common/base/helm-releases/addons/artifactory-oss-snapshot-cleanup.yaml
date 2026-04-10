@@ -1,13 +1,19 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: artifactory-oss-trash-cleanup
+  name: artifactory-oss-snapshot-cleanup
   namespace: infra
 spec:
   interval: 10m
+  dependsOn:
+    - name: artifactory-oss
+      kind: HelmRelease
+      group: helm.toolkit.fluxcd.io
+      version: v2
+      namespace: infra
   chart:
     spec:
-      chart: ./charts/artifactory/oss/trash-cleanup
+      chart: ./charts/artifactory/oss/snapshot-cleanup
       reconcileStrategy: Revision
       sourceRef:
         kind: GitRepository
