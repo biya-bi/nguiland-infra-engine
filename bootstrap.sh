@@ -63,12 +63,47 @@ create_sops_age_secret() {
   fi
 }
 
+timeout_to_seconds() {
+  local timeout="$1"
+
+  if [[ "${timeout}" =~ ^([0-9]+)s$ ]]; then
+    echo "${BASH_REMATCH[1]}"
+  elif [[ "${timeout}" =~ ^([0-9]+)m$ ]]; then
+    echo "$((BASH_REMATCH[1] * 60))"
+  elif [[ "${timeout}" =~ ^([0-9]+)h$ ]]; then
+    echo "$((BASH_REMATCH[1] * 3600))"
+  elif [[ "${timeout}" =~ ^[0-9]+$ ]]; then
+    echo "${timeout}"
+  else
+    echo "600"
+  fi
+}
+
 wait_for_artifactory_jcr() {
   local namespace="$1"
   local timeout="${2:-10m}"
+  local selector="app.kubernetes.io/instance=artifactory-jcr"
+  local timeout_seconds=$(timeout_to_seconds "${timeout}")
+  local deadline=$((SECONDS + timeout_seconds))
 
-  echo "Waiting for artifactory-jcr deployment to become available in namespace ${namespace}..."
-  kubectl wait --for=condition=available deployment -l app.kubernetes.io/instance=artifactory-jcr -n "${namespace}" --timeout="${timeout}"
+  while true; do
+    if kubectl get deployment -l "${selector}" -n "${namespace}" >/dev/null 2>&1; then
+      echo "Found artifactory-jcr deployment in namespace ${namespace}, waiting for availability..."
+      if kubectl wait --for=condition=available deployment -l "${selector}" -n "${namespace}" --timeout=5s >/dev/null 2>&1; then
+        echo "artifactory-jcr deployment is available"
+        return 0
+      fi
+    else
+      echo "Waiting for artifactory-jcr deployment resource to appear in namespace ${namespace}..."
+    fi
+
+    if (( SECONDS >= deadline )); then
+      echo "Timed out waiting for artifactory-jcr deployment in namespace ${namespace}" >&2
+      return 1
+    fi
+
+    sleep 5
+  done
 }
 
 start_helm_chart_oci_publish() {
