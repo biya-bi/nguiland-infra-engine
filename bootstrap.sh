@@ -106,17 +106,50 @@ wait_for_deployment_available() {
   done
 }
 
-trigger_helm_chart_oci_publish_run() {
+get_oci_pipelinerun_manifest_path() {
   local script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
   local manifest_path="${script_dir}/../deploy/kubernetes/pipelines/infra/oci/publish.yaml"
 
-  if [ ! -f "${manifest_path}" ]; then
+  if [[ ! -f "${manifest_path}" ]]; then
     echo "PipelineRun manifest not found: ${manifest_path}" >&2
     return 1
   fi
 
+  local tmp_file=$(mktemp)
+
+  cp "${manifest_path}" "${tmp_file}"
+
+  echo "${tmp_file}"
+}
+
+get_oci_insecure_flag() {
+  kubectl get helmrepository artifactory-oci -n infra -o jsonpath='{.spec.insecure}' 2>/dev/null || echo "false"
+}
+
+set_oci_skip_tls_param() {
+  local manifest_path="${1}"
+  local insecure=$(get_oci_insecure_flag)
+  local skip_tls="false"
+
+  local lower_insecure=$(echo "${insecure}" | tr '[:upper:]' '[:lower:]')
+
+  if [[ "${lower_insecure}" == "true" ]]; then
+    skip_tls="true"
+  fi
+
+  printf "Setting skipTls to %s based on artifactory-oci HelmRepository insecure status: %s in manifest %s\n" "${skip_tls}" "${insecure:-<missing>}" "${manifest_path}"
+  yq -i "(.spec.params[] | select(.name == \"skipTls\")).value = \"${skip_tls}\"" "${manifest_path}"
+}
+
+trigger_helm_chart_oci_publish_run() {
+  local manifest_path=$(get_oci_pipelinerun_manifest_path)
+
+  set_oci_skip_tls_param "${manifest_path}"
+
   echo "Applying Helm chart OCI publish PipelineRun manifest: ${manifest_path}"
   kubectl create -f "${manifest_path}"
+
+  rm "${manifest_path}"
 }
 
 bootstrap_flux() {
