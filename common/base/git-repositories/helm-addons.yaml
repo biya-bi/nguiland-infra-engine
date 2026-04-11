@@ -1,7 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
-  name: nguiland-infra-helm
+  name: nguiland-infra-helm-addons
   namespace: infra
 spec:
   interval: 1m
@@ -13,5 +13,5 @@ spec:
   ignore: |
     # Exclude all
     /*
-    # Include charts directory
-    !/charts/
+    # Include the addons directory
+    !/addons/

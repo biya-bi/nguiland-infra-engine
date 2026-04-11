@@ -7,10 +7,10 @@ spec:
   interval: 10m
   chart:
     spec:
-      chart: ./charts/keycloak
+      chart: ./core/keycloak
       sourceRef:
         kind: GitRepository
-        name: nguiland-infra-helm
+        name: nguiland-infra-helm-core
       interval: 10m
   values:
     replicaCount: 1

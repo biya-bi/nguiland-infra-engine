@@ -1,7 +1,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- helm.yaml
+- helm-addons.yaml
+- helm-core.yaml
 - io-utils.yaml
 - dependencies.yaml
 - ms-parent.yaml

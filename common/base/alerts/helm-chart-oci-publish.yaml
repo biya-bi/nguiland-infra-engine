@@ -12,4 +12,4 @@ spec:
     helmRegistry: oci://artifactory-jcr.infra.svc.cluster.local:8082/docker-local
   eventSources:
     - kind: GitRepository
-      name: nguiland-infra-helm
+      name: nguiland-infra-helm-addons

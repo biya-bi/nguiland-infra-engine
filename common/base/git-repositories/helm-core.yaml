@@ -1,0 +1,17 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: nguiland-infra-helm-core
+  namespace: infra
+spec:
+  interval: 1m
+  url: ssh://github.com/biya-bi/nguiland-infra-helm.git
+  ref:
+    branch: develop
+  secretRef:
+    name: ssh-credentials
+  ignore: |
+    # Exclude all
+    /*
+    # Include the core directory
+    !/core/
