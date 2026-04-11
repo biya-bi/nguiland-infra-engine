@@ -63,6 +63,33 @@ create_sops_age_secret() {
   fi
 }
 
+wait_for_artifactory_jcr() {
+  local namespace="$1"
+  local timeout="${2:-10m}"
+
+  echo "Waiting for artifactory-jcr pod to become ready in namespace ${namespace}..."
+  kubectl wait --for=condition=Ready pod -l app.kubernetes.io/instance=artifactory-jcr -n "${namespace}" --timeout="${timeout}"
+}
+
+start_helm_chart_oci_publish() {
+  local namespace="$1"
+  local repository="$2"
+  local helm_charts_dir="${3:-addons}"
+  local helm_registry="${4:-oci://artifactory-jcr.infra.svc.cluster.local:8082/docker-local}"
+
+  if ! command -v tkn >/dev/null 2>&1; then
+    echo "tkn CLI not found; skipping helm-chart-oci-publish pipeline start."
+    return
+  fi
+
+  echo "Starting helm-chart-oci-publish pipeline..."
+  tkn pipeline start helm-chart-oci-publish -n "${namespace}" \
+    --param namespace="${namespace}" \
+    --param repository="${repository}" \
+    --param helm-charts-dir="${helm_charts_dir}" \
+    --param helm-registry="${helm_registry}"
+}
+
 bootstrap_flux() {
   local namespace="$1"
   local owner="$2"
@@ -94,3 +121,6 @@ sops_age_key_file=$(echo "${SOPS_AGE_KEY_FILE:-}" | xargs)
 
 create_sops_age_secret "${sops_age_namespace}" "${sops_age_key_file}"
 bootstrap_flux "${namespace}" "${owner}" "${repository}" "${branch}" "${cluster}"
+
+wait_for_artifactory_jcr "infra" "15m"
+start_helm_chart_oci_publish "infra" "helm-addons" "addons" "oci://artifactory-jcr.infra.svc.cluster.local:8082/docker-local"
