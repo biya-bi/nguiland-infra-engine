@@ -108,7 +108,7 @@ wait_for_deployment_available() {
 
 get_oci_pipelinerun_manifest_path() {
   local script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-  local manifest_path="${script_dir}/../deploy/kubernetes/pipelines/infra/oci/publish.yaml"
+  local manifest_path="${script_dir}/pipelineruns/helm-chart-oci-publish.yaml"
 
   if [[ ! -f "${manifest_path}" ]]; then
     echo "PipelineRun manifest not found: ${manifest_path}" >&2
