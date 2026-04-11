@@ -10,5 +10,5 @@ spec:
       chart: ./core/postgres
       sourceRef:
         kind: GitRepository
-        name: nguiland-infra-helm-core
+        name: helm-core
       interval: 10m

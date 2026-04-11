@@ -1,7 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
-  name: nguiland-infra-helm-core
+  name: helm-core
   namespace: infra
 spec:
   interval: 1m

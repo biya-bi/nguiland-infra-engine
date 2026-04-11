@@ -14,7 +14,7 @@ spec:
       reconcileStrategy: Revision
       sourceRef:
         kind: GitRepository
-        name: nguiland-infra-helm-addons
+        name: helm-addons
       interval: 10m
   values:
     imagePullEndpoint: artifactory-jcr.infra
