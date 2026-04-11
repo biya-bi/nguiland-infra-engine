@@ -79,26 +79,26 @@ timeout_to_seconds() {
   fi
 }
 
-wait_for_artifactory_jcr() {
+wait_for_deployment_available() {
   local namespace="$1"
-  local timeout="${2:-10m}"
-  local selector="app.kubernetes.io/instance=artifactory-jcr"
+  local selector="$2"
+  local timeout="${3:-10m}"
   local timeout_seconds=$(timeout_to_seconds "${timeout}")
   local deadline=$((SECONDS + timeout_seconds))
 
   while true; do
     if kubectl get deployment -l "${selector}" -n "${namespace}" >/dev/null 2>&1; then
-      echo "Found artifactory-jcr deployment in namespace ${namespace}, waiting for availability..."
+      echo "Found deployment matching selector '${selector}' in namespace ${namespace}, waiting for availability..."
       if kubectl wait --for=condition=available deployment -l "${selector}" -n "${namespace}" --timeout=5s >/dev/null 2>&1; then
-        echo "artifactory-jcr deployment is available"
+        echo "Deployment matching selector '${selector}' is available"
         return 0
       fi
     else
-      echo "Waiting for artifactory-jcr deployment resource to appear in namespace ${namespace}..."
+      echo "Waiting for deployment resource matching selector '${selector}' to appear in namespace ${namespace}..."
     fi
 
     if (( SECONDS >= deadline )); then
-      echo "Timed out waiting for artifactory-jcr deployment in namespace ${namespace}" >&2
+      echo "Timed out waiting for deployment matching selector '${selector}' in namespace ${namespace}" >&2
       return 1
     fi
 
@@ -157,5 +157,5 @@ sops_age_key_file=$(echo "${SOPS_AGE_KEY_FILE:-}" | xargs)
 create_sops_age_secret "${sops_age_namespace}" "${sops_age_key_file}"
 bootstrap_flux "${namespace}" "${owner}" "${repository}" "${branch}" "${cluster}"
 
-wait_for_artifactory_jcr "infra" "15m"
+wait_for_deployment_available "infra" "app.kubernetes.io/instance=artifactory-jcr" "15m"
 start_helm_chart_oci_publish "infra" "helm-addons" "addons" "oci://artifactory-jcr.infra.svc.cluster.local:8082/docker-local"
