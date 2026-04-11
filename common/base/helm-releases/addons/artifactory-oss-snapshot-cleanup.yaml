@@ -7,9 +7,6 @@ spec:
   interval: 10m
   dependsOn:
     - name: artifactory-oss
-      kind: HelmRelease
-      group: helm.toolkit.fluxcd.io
-      version: v2
       namespace: infra
   chart:
     spec:
