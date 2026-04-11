@@ -106,23 +106,17 @@ wait_for_deployment_available() {
   done
 }
 
-start_helm_chart_oci_publish() {
-  local namespace="$1"
-  local repository="$2"
-  local helm_charts_dir="${3:-addons}"
-  local helm_registry="${4:-oci://artifactory-jcr.infra.svc.cluster.local:8082/docker-local}"
+trigger_helm_chart_oci_publish_run() {
+  local script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+  local manifest_path="${script_dir}/../deploy/kubernetes/pipelines/infra/oci/publish.yaml"
 
-  if ! command -v tkn >/dev/null 2>&1; then
-    echo "tkn CLI not found; skipping helm-chart-oci-publish pipeline start."
-    return
+  if [ ! -f "${manifest_path}" ]; then
+    echo "PipelineRun manifest not found: ${manifest_path}" >&2
+    return 1
   fi
 
-  echo "Starting helm-chart-oci-publish pipeline..."
-  tkn pipeline start helm-chart-oci-publish -n "${namespace}" \
-    --param namespace="${namespace}" \
-    --param repository="${repository}" \
-    --param helm-charts-dir="${helm_charts_dir}" \
-    --param helm-registry="${helm_registry}"
+  echo "Applying Helm chart OCI publish PipelineRun manifest: ${manifest_path}"
+  kubectl create -f "${manifest_path}"
 }
 
 bootstrap_flux() {
@@ -158,4 +152,4 @@ create_sops_age_secret "${sops_age_namespace}" "${sops_age_key_file}"
 bootstrap_flux "${namespace}" "${owner}" "${repository}" "${branch}" "${cluster}"
 
 wait_for_deployment_available "infra" "app.kubernetes.io/instance=artifactory-jcr" "15m"
-start_helm_chart_oci_publish "infra" "helm-addons" "addons" "oci://artifactory-jcr.infra.svc.cluster.local:8082/docker-local"
+trigger_helm_chart_oci_publish_run
