@@ -67,8 +67,8 @@ wait_for_artifactory_jcr() {
   local namespace="$1"
   local timeout="${2:-10m}"
 
-  echo "Waiting for artifactory-jcr pod to become ready in namespace ${namespace}..."
-  kubectl wait --for=condition=Ready pod -l app.kubernetes.io/instance=artifactory-jcr -n "${namespace}" --timeout="${timeout}"
+  echo "Waiting for artifactory-jcr deployment to become available in namespace ${namespace}..."
+  kubectl wait --for=condition=available deployment -l app.kubernetes.io/instance=artifactory-jcr -n "${namespace}" --timeout="${timeout}"
 }
 
 start_helm_chart_oci_publish() {
