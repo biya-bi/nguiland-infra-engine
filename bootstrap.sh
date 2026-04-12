@@ -3,7 +3,7 @@
 set -eu
 
 yes_or_no() {
-  local question="$1"
+  local question="${1}"
 
   while true; do
     read -p "${question} [y/n] " response
@@ -17,7 +17,7 @@ yes_or_no() {
 }
 
 get_sops_age_private_key() {
-  local sops_age_key_file="$1"
+  local sops_age_key_file="${1}"
 
   local regex='#\spublic\skey:\s.\+'
 
@@ -25,7 +25,7 @@ get_sops_age_private_key() {
 }
 
 create_namespace() {
-  local namespace="$1"
+  local namespace="${1}"
 
   local result=$(kubectl get namespaces | tail -n +2 | awk '{print $1}' | grep "${namespace}")
 
@@ -35,9 +35,9 @@ create_namespace() {
 }
 
 create_age_key_secret() {
-  local namespace="$1"
-  local secret_name="$2"
-  local sops_age_private_key="$3"
+  local namespace="${1}"
+  local secret_name="${2}"
+  local sops_age_private_key="${3}"
 
   local result=$(kubectl get secrets --namespace="${namespace}" | tail -n +2 | awk '{print $1}' | grep "${secret_name}")
 
@@ -47,8 +47,8 @@ create_age_key_secret() {
 }
 
 create_sops_age_secret() {
-  local namespace="$1"
-  local sops_age_key_file="$2"
+  local namespace="${1}"
+  local sops_age_key_file="${2}"
 
   if [ -f "${sops_age_key_file}" ]; then
     local question=$(printf "The '%s' environment variable points to the '%s' file. \nDo you want to use the later file for the deployment?\n" "SOPS_AGE_KEY_FILE" "${sops_age_key_file}")
@@ -64,14 +64,14 @@ create_sops_age_secret() {
 }
 
 timeout_to_seconds() {
-  local timeout="$1"
+  local timeout="${1}"
 
   if [[ "${timeout}" =~ ^([0-9]+)s$ ]]; then
     echo "${BASH_REMATCH[1]}"
   elif [[ "${timeout}" =~ ^([0-9]+)m$ ]]; then
-    echo "$((BASH_REMATCH[1] * 60))"
+    echo "$((${BASH_REMATCH[1]} * 60))"
   elif [[ "${timeout}" =~ ^([0-9]+)h$ ]]; then
-    echo "$((BASH_REMATCH[1] * 3600))"
+    echo "$((${BASH_REMATCH[1]} * 3600))"
   elif [[ "${timeout}" =~ ^[0-9]+$ ]]; then
     echo "${timeout}"
   else
@@ -80,11 +80,11 @@ timeout_to_seconds() {
 }
 
 wait_for_deployment_available() {
-  local namespace="$1"
-  local selector="$2"
+  local namespace="${1}"
+  local selector="${2}"
   local timeout="${3:-10m}"
   local timeout_seconds=$(timeout_to_seconds "${timeout}")
-  local deadline=$((SECONDS + timeout_seconds))
+  local deadline=$((${SECONDS} + ${timeout_seconds}))
 
   while true; do
     if kubectl get deployment -l "${selector}" -n "${namespace}" >/dev/null 2>&1; then
@@ -97,7 +97,7 @@ wait_for_deployment_available() {
       echo "Waiting for deployment resource matching selector '${selector}' to appear in namespace ${namespace}..."
     fi
 
-    if (( SECONDS >= deadline )); then
+    if (( ${SECONDS} >= ${deadline} )); then
       echo "Timed out waiting for deployment matching selector '${selector}' in namespace ${namespace}" >&2
       return 1
     fi
@@ -153,11 +153,11 @@ trigger_helm_chart_oci_publish_run() {
 }
 
 bootstrap_flux() {
-  local namespace="$1"
-  local owner="$2"
-  local repository="$3"
-  local branch="$4"
-  local cluster="$5"
+  local namespace="${1}"
+  local owner="${2}"
+  local repository="${3}"
+  local branch="${4}"
+  local cluster="${5}"
 
   flux bootstrap github \
     --namespace="${namespace}" \
