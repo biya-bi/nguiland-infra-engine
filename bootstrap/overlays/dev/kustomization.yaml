@@ -12,7 +12,7 @@ patches:
     group: kustomize.toolkit.fluxcd.io
     version: v1
     kind: Kustomization
-    name: env
+    name: common
     namespace: infra
 - patch: |-
     - op: replace
@@ -22,5 +22,5 @@ patches:
     group: kustomize.toolkit.fluxcd.io
     version: v1
     kind: Kustomization
-    name: init
+    name: core
     namespace: infra
