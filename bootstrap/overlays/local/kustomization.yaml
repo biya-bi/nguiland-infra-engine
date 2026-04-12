@@ -17,7 +17,7 @@ patches:
 - patch: |-
     - op: replace
       path: /spec/path
-      value: ./bootstrap/overlays/local
+      value: ./core/overlays/local
   target:
     group: kustomize.toolkit.fluxcd.io
     version: v1
