@@ -147,7 +147,7 @@ set_oci_pipelinerun_params() {
   fi
 }
 
-trigger_helm_chart_oci_publish_run() {
+trigger_oci_pipelinerun() {
   local manifest_path=$(get_oci_pipelinerun_manifest_path)
 
   set_oci_pipelinerun_params "${manifest_path}"
@@ -191,4 +191,4 @@ create_sops_age_secret "${sops_age_namespace}" "${sops_age_key_file}"
 bootstrap_flux "${namespace}" "${owner}" "${repository}" "${branch}" "${cluster}"
 
 wait_for_deployment_available "infra" "app.kubernetes.io/instance=artifactory-jcr" "15m"
-trigger_helm_chart_oci_publish_run
+trigger_oci_pipelinerun
