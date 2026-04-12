@@ -22,7 +22,7 @@ patches:
     group: kustomize.toolkit.fluxcd.io
     version: v1
     kind: Kustomization
-    name: kyverno
+    name: init
     namespace: infra
 - patch: |-
     - op: replace

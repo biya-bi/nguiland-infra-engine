@@ -3,4 +3,5 @@ kind: Kustomization
 resources:
 - namespaces.yaml
 - kyverno.yaml
+- init.yaml
 - env.yaml
