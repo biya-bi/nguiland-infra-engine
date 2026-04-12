@@ -122,29 +122,35 @@ get_oci_pipelinerun_manifest_path() {
   echo "${tmp_file}"
 }
 
-get_oci_insecure_flag() {
-  kubectl get helmrepository artifactory-oci -n infra -o jsonpath='{.spec.insecure}' 2>/dev/null || echo "false"
-}
-
-set_oci_skip_tls_param() {
+set_oci_pipelinerun_params() {
   local manifest_path="${1}"
-  local insecure=$(get_oci_insecure_flag)
+
+  local helm_repo_json=$(kubectl get helmrepository artifactory-oci -n infra -o json 2>/dev/null || echo "{}")
+
+  local insecure_status=$(echo "${helm_repo_json}" | yq '.spec.insecure // "false"' -o=json | tr -d '"')
+
+  local helm_registry_url=$(echo "${helm_repo_json}" | yq '.spec.url // ""' -o=json | tr -d '"')
+
   local skip_tls="false"
+  local lower_insecure_status=$(echo "${insecure_status}" | tr '[:upper:]' '[:lower:]')
 
-  local lower_insecure=$(echo "${insecure}" | tr '[:upper:]' '[:lower:]')
-
-  if [[ "${lower_insecure}" == "true" ]]; then
+  if [[ "${lower_insecure_status}" == "true" ]]; then
     skip_tls="true"
   fi
 
-  printf "Setting skipTls to %s based on artifactory-oci HelmRepository insecure status: %s in manifest %s\n" "${skip_tls}" "${insecure:-<missing>}" "${manifest_path}"
+  printf "Setting skipTls to %s based on artifactory-oci HelmRepository insecure status: %s in manifest %s\n" "${skip_tls}" "${insecure_status:-<missing>}" "${manifest_path}"
   yq -i "(.spec.params[] | select(.name == \"skipTls\")).value = \"${skip_tls}\"" "${manifest_path}"
+
+  if [[ -n "${helm_registry_url}" ]]; then
+    printf "Setting helm-registry to %s based on artifactory-oci HelmRepository URL: %s in manifest %s\n" "${helm_registry_url}" "${helm_registry_url}" "${manifest_path}"
+    yq -i "(.spec.params[] | select(.name == \"helm-registry\")).value = \"${helm_registry_url}\"" "${manifest_path}"
+  fi
 }
 
 trigger_helm_chart_oci_publish_run() {
   local manifest_path=$(get_oci_pipelinerun_manifest_path)
 
-  set_oci_skip_tls_param "${manifest_path}"
+  set_oci_pipelinerun_params "${manifest_path}"
 
   echo "Applying Helm chart OCI publish PipelineRun manifest: ${manifest_path}"
   kubectl create -f "${manifest_path}"
