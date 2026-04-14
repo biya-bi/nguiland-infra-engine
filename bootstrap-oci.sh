@@ -46,7 +46,7 @@ wait_for_resource() {
 }
 
 wait_for_deployment_available() {
-  wait_for_resource "${1}" "deployment" "${2}" "condition=available" "${3:-10m}"
+  wait_for_resource "${1}" "deployment" "${2}" "condition=Available" "${3:-10m}"
 }
 
 wait_for_helmrepository_exists() {
@@ -64,7 +64,6 @@ suspend_helmreleases() {
 
   for release_name in "${release_names[@]}"; do
     wait_for_helmrelease_exists "${namespace}" "${release_name}" "10m"
-    echo "Suspending HelmRelease ${release_name} in namespace ${namespace}..."
     flux suspend hr "${release_name}" -n "${namespace}"
   done
 }
@@ -79,7 +78,6 @@ resume_helmreleases() {
   local release_names=("${@}")
 
   for release_name in "${release_names[@]}"; do
-    echo "Resuming HelmRelease ${release_name} in namespace ${namespace}..."
     flux resume hr "${release_name}" -n "${namespace}"
   done
 }
@@ -158,7 +156,7 @@ run_oci_publish_flow() {
   local addons=(artifactory-oss-snapshot-cleanup artifactory-oss-trash-cleanup)
 
   suspend_helmreleases "${namespace}" "${addons[@]}"
-  wait_for_deployment_available "${namespace}" "app.kubernetes.io/instance=artifactory-jcr" "15m"
+  wait_for_deployment_available "${namespace}" "artifactory-jcr" "15m"
   run_oci_publish_pipeline "${namespace}"
   wait_for_helmrepository_exists "${namespace}" "artifactory-oci" "10m"
   resume_helmreleases "${namespace}" "${addons[@]}"
