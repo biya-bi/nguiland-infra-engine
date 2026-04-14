@@ -32,7 +32,7 @@ wait_for_resource() {
         return 0
       fi
     else
-      echo "Waiting for ${resource_type}/${resource_name} condition ${condition} in namespace ${namespace}..."
+      echo "Waiting for ${resource_type}/${resource_name} ${condition} in namespace ${namespace}..."
       if kubectl wait --for="${condition}" "${resource_type}/${resource_name}" -n "${namespace}" --timeout=5s >/dev/null 2>&1; then
         return 0
       fi
