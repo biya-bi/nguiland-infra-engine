@@ -147,13 +147,82 @@ set_oci_pipelinerun_params() {
   fi
 }
 
+wait_for_pipelinerun_success() {
+  local namespace="${1}"
+  local pipelinerun_name="${2}"
+  local timeout="${3:-1h}"
+
+  echo "Waiting for PipelineRun ${pipelinerun_name} to succeed in namespace ${namespace}..."
+  if kubectl wait --for=condition=Succeeded pipelinerun/"${pipelinerun_name}" -n "${namespace}" --timeout="${timeout}"; then
+    echo "PipelineRun ${pipelinerun_name} succeeded"
+    return 0
+  fi
+
+  echo "PipelineRun ${pipelinerun_name} failed or timed out" >&2
+  kubectl describe pipelinerun "${pipelinerun_name}" -n "${namespace}" || true
+  return 1
+}
+
+wait_for_helmrepository_ready() {
+  local namespace="${1}"
+  local repository_name="${2}"
+  local timeout="${3:-10m}"
+
+  echo "Waiting for HelmRepository ${repository_name} to become Ready in namespace ${namespace}..."
+  if kubectl wait --for=condition=Ready helmrepository/"${repository_name}" -n "${namespace}" --timeout="${timeout}"; then
+    echo "HelmRepository ${repository_name} is Ready"
+    return 0
+  fi
+
+  echo "HelmRepository ${repository_name} did not become Ready" >&2
+  kubectl describe helmrepository/"${repository_name}" -n "${namespace}" || true
+  return 1
+}
+
+wait_for_helmrelease() {
+  local namespace="${1}"
+  local release_name="${2}"
+  local timeout="${3:-5m}"
+  local deadline=$(($(date +%s) + $(timeout_to_seconds "${timeout}")))
+
+  while true; do
+    if kubectl get helmrelease "${release_name}" -n "${namespace}" >/dev/null 2>&1; then
+      return 0
+    fi
+
+    if (( $(date +%s) >= deadline )); then
+      echo "Timed out waiting for HelmRelease ${release_name} to exist in namespace ${namespace}" >&2
+      return 1
+    fi
+
+    sleep 5
+  done
+}
+
+unsuspend_helmreleases() {
+  local namespace="${1}"
+  shift
+  local release_names=("${@}")
+
+  for release_name in "${release_names[@]}"; do
+    wait_for_helmrelease "${namespace}" "${release_name}" "10m"
+    echo "Unsuspending HelmRelease ${release_name} in namespace ${namespace}"
+    kubectl patch helmrelease "${release_name}" -n "${namespace}" --type merge -p '{"spec":{"suspend":false}}'
+  done
+}
+
 trigger_oci_pipelinerun() {
   local manifest_path=$(get_oci_pipelinerun_manifest_path)
 
   set_oci_pipelinerun_params "${manifest_path}"
 
   echo "Applying Helm chart OCI publish PipelineRun manifest: ${manifest_path}"
-  kubectl create -f "${manifest_path}"
+  local pipelinerun_name=$(kubectl create -f "${manifest_path}" -o jsonpath='{.metadata.name}')
+  echo "Triggered PipelineRun ${pipelinerun_name}"
+
+  wait_for_pipelinerun_success "infra" "${pipelinerun_name}" "1h"
+  wait_for_helmrepository_ready "infra" "artifactory-oci" "10m"
+  unsuspend_helmreleases "infra" artifactory-oss-snapshot-cleanup artifactory-oss-trash-cleanup
 
   rm "${manifest_path}"
 }

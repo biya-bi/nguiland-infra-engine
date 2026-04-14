@@ -4,6 +4,7 @@ metadata:
   name: artifactory-oss-trash-cleanup
   namespace: infra
 spec:
+  suspend: true
   interval: 10m
   dependsOn:
     - name: artifactory-oss
