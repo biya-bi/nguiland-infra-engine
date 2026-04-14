@@ -17,30 +17,70 @@ timeout_to_seconds() {
   fi
 }
 
-wait_for_deployment_available() {
-  local namespace="${1}"
-  local selector="${2}"
-  local timeout="${3:-10m}"
-  local timeout_seconds=$(timeout_to_seconds "${timeout}")
-  local deadline=$((${SECONDS} + ${timeout_seconds}))
+wait_for_resource() {
+  local namespace="$1"
+  local resource_type="$2"
+  local resource_name="$3"
+  local condition="$4"
+  local timeout="${5:-10m}"
+  local deadline=$(($(date +%s) + $(timeout_to_seconds "${timeout}")))
 
   while true; do
-    if kubectl get deployment -l "${selector}" -n "${namespace}" >/dev/null 2>&1; then
-      echo "Found deployment matching selector '${selector}' in namespace ${namespace}, waiting for availability..."
-      if kubectl wait --for=condition=available deployment -l "${selector}" -n "${namespace}" --timeout=5s >/dev/null 2>&1; then
-        echo "Deployment matching selector '${selector}' is available"
+    if [[ "${condition}" == "exists" ]]; then
+      echo "Waiting for ${resource_type}/${resource_name} to exist in namespace ${namespace}..."
+      if kubectl get "${resource_type}" "${resource_name}" -n "${namespace}" >/dev/null 2>&1; then
         return 0
       fi
     else
-      echo "Waiting for deployment resource matching selector '${selector}' to appear in namespace ${namespace}..."
+      echo "Waiting for ${resource_type}/${resource_name} condition ${condition} in namespace ${namespace}..."
+      if kubectl wait --for="${condition}" "${resource_type}/${resource_name}" -n "${namespace}" --timeout=5s >/dev/null 2>&1; then
+        return 0
+      fi
     fi
 
-    if (( ${SECONDS} >= ${deadline} )); then
-      echo "Timed out waiting for deployment matching selector '${selector}' in namespace ${namespace}" >&2
+    if (( $(date +%s) >= deadline )); then
       return 1
     fi
-
     sleep 5
+  done
+}
+
+wait_for_deployment_available() {
+  wait_for_resource "${1}" "deployment" "${2}" "condition=available" "${3:-10m}"
+}
+
+wait_for_helmrepository_exists() {
+  wait_for_resource "${1}" "helmrepository" "${2}" "exists" "${3:-10m}"
+}
+
+wait_for_helmrelease_exists() {
+  wait_for_resource "${1}" "helmrelease" "${2}" "exists" "${3:-10m}"
+}
+
+suspend_helmreleases() {
+  local namespace="${1}"
+  shift
+  local release_names=("${@}")
+
+  for release_name in "${release_names[@]}"; do
+    wait_for_helmrelease_exists "${namespace}" "${release_name}" "10m"
+    echo "Suspending HelmRelease ${release_name} in namespace ${namespace}..."
+    flux suspend hr "${release_name}" -n "${namespace}"
+  done
+}
+
+wait_for_helmrelease() {
+  wait_for_resource "${1}" "helmrelease" "${2}" "condition=Ready" "${3:-5m}"
+}
+
+resume_helmreleases() {
+  local namespace="${1}"
+  shift
+  local release_names=("${@}")
+
+  for release_name in "${release_names[@]}"; do
+    echo "Resuming HelmRelease ${release_name} in namespace ${namespace}..."
+    flux resume hr "${release_name}" -n "${namespace}"
   done
 }
 
@@ -97,55 +137,9 @@ wait_for_pipelinerun_success() {
   return 1
 }
 
-wait_for_helmrepository_ready() {
+run_oci_publish_pipeline() {
   local namespace="${1}"
-  local repository_name="${2}"
-  local timeout="${3:-10m}"
 
-  echo "Waiting for HelmRepository ${repository_name} to become Ready in namespace ${namespace}..."
-  if kubectl wait --for=condition=Ready helmrepository/"${repository_name}" -n "${namespace}" --timeout="${timeout}"; then
-    echo "HelmRepository ${repository_name} is Ready"
-    return 0
-  fi
-
-  echo "HelmRepository ${repository_name} did not become Ready" >&2
-  kubectl describe helmrepository/"${repository_name}" -n "${namespace}" || true
-  return 1
-}
-
-wait_for_helmrelease() {
-  local namespace="${1}"
-  local release_name="${2}"
-  local timeout="${3:-5m}"
-  local deadline=$(($(date +%s) + $(timeout_to_seconds "${timeout}")))
-
-  while true; do
-    if kubectl get helmrelease "${release_name}" -n "${namespace}" >/dev/null 2>&1; then
-      return 0
-    fi
-
-    if (( $(date +%s) >= deadline )); then
-      echo "Timed out waiting for HelmRelease ${release_name} to exist in namespace ${namespace}" >&2
-      return 1
-    fi
-
-    sleep 5
-  done
-}
-
-unsuspend_helmreleases() {
-  local namespace="${1}"
-  shift
-  local release_names=("${@}")
-
-  for release_name in "${release_names[@]}"; do
-    wait_for_helmrelease "${namespace}" "${release_name}" "10m"
-    echo "Unsuspending HelmRelease ${release_name} in namespace ${namespace}"
-    kubectl patch helmrelease "${release_name}" -n "${namespace}" --type merge -p '{"spec":{"suspend":false}}'
-  done
-}
-
-run_oci_pipelinerun_flow() {
   local manifest_path=$(get_oci_pipelinerun_manifest_path)
 
   set_oci_pipelinerun_params "${manifest_path}"
@@ -154,12 +148,20 @@ run_oci_pipelinerun_flow() {
   local pipelinerun_name=$(kubectl create -f "${manifest_path}" -o jsonpath='{.metadata.name}')
   echo "Triggered PipelineRun ${pipelinerun_name}"
 
-  wait_for_pipelinerun_success "infra" "${pipelinerun_name}" "1h"
-  wait_for_helmrepository_ready "infra" "artifactory-oci" "10m"
-  unsuspend_helmreleases "infra" artifactory-oss-snapshot-cleanup artifactory-oss-trash-cleanup
+  wait_for_pipelinerun_success "${namespace}" "${pipelinerun_name}" "1h"
 
   rm "${manifest_path}"
 }
 
-wait_for_deployment_available "infra" "app.kubernetes.io/instance=artifactory-jcr" "15m"
-run_oci_pipelinerun_flow
+run_oci_publish_flow() {
+  local namespace="infra"
+  local addons=(artifactory-oss-snapshot-cleanup artifactory-oss-trash-cleanup)
+
+  suspend_helmreleases "${namespace}" "${addons[@]}"
+  wait_for_deployment_available "${namespace}" "app.kubernetes.io/instance=artifactory-jcr" "15m"
+  run_oci_publish_pipeline "${namespace}"
+  wait_for_helmrepository_exists "${namespace}" "artifactory-oci" "10m"
+  resume_helmreleases "${namespace}" "${addons[@]}"
+}
+
+run_oci_publish_flow

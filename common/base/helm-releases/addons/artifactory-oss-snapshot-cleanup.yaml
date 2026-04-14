@@ -4,7 +4,6 @@ metadata:
   name: artifactory-oss-snapshot-cleanup
   namespace: infra
 spec:
-  suspend: true
   interval: 10m
   dependsOn:
     - name: artifactory-oss
