@@ -10,12 +10,18 @@ spec:
       namespace: infra
   chart:
     spec:
-      chart: ./addons/artifactory-oss-snapshot-cleanup
-      reconcileStrategy: Revision
+      chart: artifactory-oss-snapshot-cleanup
+      version: "0.1.0"
       sourceRef:
-        kind: GitRepository
-        name: helm-addons
+        kind: HelmRepository
+        name: artifactory-oci
       interval: 10m
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
   values:
     imagePullEndpoint: artifactory-jcr.infra
     artOssUrl: http://artifactory-oss:8082/artifactory
