@@ -46,6 +46,8 @@ wait_for_resource() {
 
   local message=$(get_wait_message "${resource_type}" "${resource_name}" "${condition}" "${namespace}")
   printf "%s" "${message}"
+  printf '\033[?25l'
+  trap 'printf "\033[?25h"' RETURN
 
   while true; do
     if [[ "${condition}" == "exists" ]]; then
