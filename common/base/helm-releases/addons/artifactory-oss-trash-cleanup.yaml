@@ -10,7 +10,7 @@ spec:
       namespace: infra
   chart:
     spec:
-      chart: artifactory-oss-trash-cleanup
+      chart: org.nguiland.infra/artifactory-oss-trash-cleanup
       version: "0.1.0"
       sourceRef:
         kind: HelmRepository
