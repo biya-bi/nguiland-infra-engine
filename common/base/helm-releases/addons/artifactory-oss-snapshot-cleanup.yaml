@@ -25,4 +25,4 @@ spec:
   values:
     image:
       repository: artifactory-jcr.infra/docker-local/org.nguiland.infra/alpine-ops-toolkit
-    artOssUrl: http://artifactory-oss:8082/artifactory
+    artOssUrl: http://artifactory-oss.infra:8082/artifactory

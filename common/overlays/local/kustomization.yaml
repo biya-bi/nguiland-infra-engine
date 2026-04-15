@@ -75,7 +75,7 @@ patches:
       value: artifactory-jcr.infra/docker-local/org.nguiland.infra/alpine-ops-toolkit
     - op: replace
       path: /spec/values/artOssUrl
-      value: http://artifactory-oss:8082/artifactory
+      value: http://artifactory-oss.infra:8082/artifactory
    target:
      kind: HelmRelease
      name: artifactory-oss-.*-cleanup
