@@ -42,7 +42,7 @@ wait_for_resource() {
   local timeout="${5:-10m}"
   local deadline=$(($(date +%s) + $(timeout_to_seconds "${timeout}")))
   local dots=0
-  local dot_states=("" "." ".." "...")
+  local dot_states=("   " ".  " ".. " "...")
 
   local message=$(get_wait_message "${resource_type}" "${resource_name}" "${condition}" "${namespace}")
   printf "%s" "${message}"
