@@ -23,5 +23,6 @@ spec:
     remediation:
       retries: 3
   values:
-    imagePullEndpoint: artifactory-jcr.infra
+    image:
+      repository: artifactory-jcr.infra.svc.cluster.local:8082/docker-local/org.nguiland.infra/alpine-ops-toolkit
     artOssUrl: http://artifactory-oss:8082/artifactory

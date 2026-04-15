@@ -82,22 +82,22 @@ patches:
     kind: Ingress
     name: nguiland
     namespace: infra
--  patch: |-
+- patch: |-
     - op: replace
-      path: /spec/values/imagePullEndpoint
-      value: dev-jcr.nguiland.org
+      path: /spec/values/image/repository
+      value: dev-jcr.nguiland.org/docker-local/org.nguiland.infra/alpine-ops-toolkit
     - op: replace
       path: /spec/values/artOssUrl
       value: https://dev-oss.nguiland.org/artifactory
-   target:
-     kind: HelmRelease
-     name: artifactory-oss-.*-cleanup
-     namespace: infra
--  patch: |-
+  target:
+    kind: HelmRelease
+    name: artifactory-oss-.*-cleanup
+    namespace: infra
+- patch: |-
     - op: replace
       path: /spec/url
       value: oci://dev-jcr.nguiland.org/docker-local
-   target:
-     kind: HelmRepository
-     name: artifactory-oci
-     namespace: infra
+  target:
+    kind: HelmRepository
+    name: artifactory-oci
+    namespace: infra

@@ -85,22 +85,22 @@ patches:
     kind: ConfigMap
     name: env-settings
     namespace: infra
--  patch: |-
+- patch: |-
     - op: replace
-      path: /spec/values/imagePullEndpoint
-      value: jcr.nguiland.org
+      path: /spec/values/image/repository
+      value: jcr.nguiland.org/docker-local/org.nguiland.infra/alpine-ops-toolkit
     - op: replace
       path: /spec/values/artOssUrl
       value: https://oss.nguiland.org/artifactory
-   target:
-     kind: HelmRelease
-     name: artifactory-oss-.*-cleanup
-     namespace: infra
--  patch: |-
+  target:
+    kind: HelmRelease
+    name: artifactory-oss-.*-cleanup
+    namespace: infra
+- patch: |-
     - op: replace
       path: /spec/url
       value: oci://jcr.nguiland.org/docker-local
-   target:
-     kind: HelmRepository
-     name: artifactory-oci
-     namespace: infra
+  target:
+    kind: HelmRepository
+    name: artifactory-oci
+    namespace: infra

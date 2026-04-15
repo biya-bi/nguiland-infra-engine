@@ -71,8 +71,8 @@ patches:
     name: add-imagepullsecrets
 -  patch: |-
     - op: replace
-      path: /spec/values/imagePullEndpoint
-      value: artifactory-jcr.infra
+      path: /spec/values/image/repository
+      value: artifactory-jcr.infra.svc.cluster.local:8082/docker-local/org.nguiland.infra/alpine-ops-toolkit
     - op: replace
       path: /spec/values/artOssUrl
       value: http://artifactory-oss:8082/artifactory
