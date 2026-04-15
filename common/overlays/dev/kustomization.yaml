@@ -31,6 +31,9 @@ patches:
     - op: replace
       path: /data/image-pull-endpoint
       value: jcr.nguiland.org
+    - op: replace
+      path: /data/image-push-endpoint
+      value: jcr.nguiland.org
   target:
     version: v1
     kind: ConfigMap

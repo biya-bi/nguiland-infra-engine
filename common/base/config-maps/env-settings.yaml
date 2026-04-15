@@ -6,3 +6,4 @@ metadata:
 data:
   environment: ${ENVIRONMENT}
   image-pull-endpoint: ${IMAGE_PULL_ENDPOINT}
+  image-push-endpoint: ${IMAGE_PUSH_ENDPOINT}

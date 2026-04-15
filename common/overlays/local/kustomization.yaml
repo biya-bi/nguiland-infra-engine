@@ -55,6 +55,9 @@ patches:
     - op: replace
       path: /data/image-pull-endpoint
       value: artifactory-jcr.infra
+    - op: replace
+      path: /data/image-push-endpoint
+      value: artifactory-jcr.infra.svc.cluster.local:8082
   target:
     version: v1
     kind: ConfigMap
