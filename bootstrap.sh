@@ -81,21 +81,23 @@ bootstrap_flux() {
     --personal
 }
 
-cluster="${1}"
-branch="${2}"
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  cluster="${1}"
+  branch="${2}"
 
-namespace="flux-system"
-sops_age_namespace="infra"
-owner="biya-bi"
-repository="nguiland-infra-engine"
-branch="${branch}"
+  namespace="flux-system"
+  sops_age_namespace="infra"
+  owner="biya-bi"
+  repository="nguiland-infra-engine"
+  branch="${branch}"
 
-sops_age_key_file=$(echo "${SOPS_AGE_KEY_FILE:-}" | xargs)
+  sops_age_key_file=$(echo "${SOPS_AGE_KEY_FILE:-}" | xargs)
 
-create_sops_age_secret "${sops_age_namespace}" "${sops_age_key_file}"
-bootstrap_flux "${namespace}" "${owner}" "${repository}" "${branch}" "${cluster}"
+  create_sops_age_secret "${sops_age_namespace}" "${sops_age_key_file}"
+  bootstrap_flux "${namespace}" "${owner}" "${repository}" "${branch}" "${cluster}"
 
-# Invoke deploy.sh after bootstrap_flux completes.
-# The deploy.sh script is expected to live alongside this bootstrap script.
-SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-"${SCRIPT_DIR}/deploy.sh"
+  # Invoke deploy.sh after bootstrap_flux completes.
+  # The deploy.sh script is expected to live alongside this bootstrap script.
+  SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+  "${SCRIPT_DIR}/deploy.sh"
+fi
