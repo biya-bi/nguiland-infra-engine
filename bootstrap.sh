@@ -94,6 +94,3 @@ sops_age_key_file=$(echo "${SOPS_AGE_KEY_FILE:-}" | xargs)
 
 create_sops_age_secret "${sops_age_namespace}" "${sops_age_key_file}"
 bootstrap_flux "${namespace}" "${owner}" "${repository}" "${branch}" "${cluster}"
-
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${script_dir}/bootstrap-oci.sh"
