@@ -17,6 +17,23 @@ timeout_to_seconds() {
   fi
 }
 
+get_wait_message() {
+  local resource_type="$1"
+  local resource_name="$2"
+  local condition="$3"
+  local namespace="$4"
+
+  if [[ "${condition}" == "exists" ]]; then
+    printf "Waiting for %s/%s to exist in namespace %s" "${resource_type}" "${resource_name}" "${namespace}"
+  elif [[ "${condition}" == condition=* ]]; then
+    local condition_value=${condition#condition=}
+    local condition_text=$(printf "%s" "${condition_value}" | tr '[:upper:]' '[:lower:]')
+    printf "Waiting for %s/%s to be %s in namespace %s" "${resource_type}" "${resource_name}" "${condition_text}" "${namespace}"
+  else
+    printf "Waiting for %s/%s %s in namespace %s" "${resource_type}" "${resource_name}" "${condition}" "${namespace}"
+  fi
+}
+
 wait_for_resource() {
   local namespace="$1"
   local resource_type="$2"
@@ -24,16 +41,10 @@ wait_for_resource() {
   local condition="$4"
   local timeout="${5:-10m}"
   local deadline=$(($(date +%s) + $(timeout_to_seconds "${timeout}")))
-  local message
   local dots=0
   local dot_states=("" "." ".." "...")
 
-  if [[ "${condition}" == "exists" ]]; then
-    message="Waiting for ${resource_type}/${resource_name} to exist in namespace ${namespace}"
-  else
-    message="Waiting for ${resource_type}/${resource_name} ${condition} in namespace ${namespace}"
-  fi
-
+  local message=$(get_wait_message "${resource_type}" "${resource_name}" "${condition}" "${namespace}")
   printf "%s" "${message}"
 
   while true; do
