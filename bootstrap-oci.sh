@@ -24,23 +24,38 @@ wait_for_resource() {
   local condition="$4"
   local timeout="${5:-10m}"
   local deadline=$(($(date +%s) + $(timeout_to_seconds "${timeout}")))
+  local message
+  local dots=0
+  local dot_states=("" "." ".." "...")
+
+  if [[ "${condition}" == "exists" ]]; then
+    message="Waiting for ${resource_type}/${resource_name} to exist in namespace ${namespace}"
+  else
+    message="Waiting for ${resource_type}/${resource_name} ${condition} in namespace ${namespace}"
+  fi
+
+  printf "%s" "${message}"
 
   while true; do
     if [[ "${condition}" == "exists" ]]; then
-      echo "Waiting for ${resource_type}/${resource_name} to exist in namespace ${namespace}..."
       if kubectl get "${resource_type}" "${resource_name}" -n "${namespace}" >/dev/null 2>&1; then
+        printf "\n"
         return 0
       fi
     else
-      echo "Waiting for ${resource_type}/${resource_name} ${condition} in namespace ${namespace}..."
       if kubectl wait --for="${condition}" "${resource_type}/${resource_name}" -n "${namespace}" --timeout=5s >/dev/null 2>&1; then
+        printf "\n"
         return 0
       fi
     fi
 
     if (( $(date +%s) >= deadline )); then
+      printf "\n"
       return 1
     fi
+
+    dots=$(( (dots + 1) % 4 ))
+    printf "\r%s%s" "${message}" "${dot_states[dots]}"
     sleep 5
   done
 }
