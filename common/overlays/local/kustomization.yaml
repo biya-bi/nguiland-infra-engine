@@ -72,7 +72,7 @@ patches:
 -  patch: |-
     - op: replace
       path: /spec/values/image/repository
-      value: artifactory-jcr.infra.svc.cluster.local:8082/docker-local/org.nguiland.infra/alpine-ops-toolkit
+      value: artifactory-jcr.infra/docker-local/org.nguiland.infra/alpine-ops-toolkit
     - op: replace
       path: /spec/values/artOssUrl
       value: http://artifactory-oss:8082/artifactory
