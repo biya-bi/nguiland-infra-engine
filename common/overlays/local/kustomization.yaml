@@ -84,6 +84,14 @@ patches:
      name: artifactory-oss-.*-cleanup
      namespace: infra
 -  patch: |-
+    - op: replace
+      path: /spec/values/image/repository
+      value: artifactory-jcr.infra/docker-local/org.nguiland.infra/alpine-ops-toolkit
+   target:
+     kind: HelmRelease
+     name: artifactory-data-cleanup
+     namespace: infra
+-  patch: |-
     - op: add
       path: /spec/insecure
       # We are on a cluster on our local development machine, so we can allow insecure connections to the registry,

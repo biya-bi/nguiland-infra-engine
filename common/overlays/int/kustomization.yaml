@@ -98,6 +98,14 @@ patches:
      namespace: infra
 -  patch: |-
     - op: replace
+      path: /spec/values/image/repository
+      value: int-jcr.nguiland.org/docker-local/org.nguiland.infra/alpine-ops-toolkit
+   target:
+     kind: HelmRelease
+     name: artifactory-data-cleanup
+     namespace: infra
+-  patch: |-
+    - op: replace
       path: /spec/url
       value: oci://int-jcr.nguiland.org/docker-local
    target:
