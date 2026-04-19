@@ -43,12 +43,15 @@ create_sops_age_secret() {
   local sops_age_key_file="${2}"
 
   if [ -f "${sops_age_key_file}" ]; then
-    local question=$(printf "The '%s' environment variable points to the '%s' file. \nDo you want to use the later file for the deployment?\n" "SOPS_AGE_KEY_FILE" "${sops_age_key_file}")
-    local response=$(yes_or_no "${question}")
+    local question
+    question=$(printf "The '%s' environment variable points to the '%s' file. \nDo you want to use the later file for the deployment?\n" "SOPS_AGE_KEY_FILE" "${sops_age_key_file}")
+    local response
+    response=$(yes_or_no "${question}")
     if [ "${response}" == "yes" ]; then
       create_namespace "${namespace}"
 
-      local sops_age_private_key=$(get_sops_age_private_key "${sops_age_key_file}")
+      local sops_age_private_key
+      sops_age_private_key=$(get_sops_age_private_key "${sops_age_key_file}")
 
       create_age_key_secret "${namespace}" "sops-age" "${sops_age_private_key}"
     fi

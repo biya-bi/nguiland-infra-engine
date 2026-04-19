@@ -13,6 +13,7 @@ main() {
     return 1
   fi
 
+  local TEMP_DIR
   TEMP_DIR=$(mktemp -d)
   cleanup() {
     exit_code=$?
