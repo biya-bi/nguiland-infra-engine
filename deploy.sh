@@ -1,5 +1,6 @@
-#!/bin/sh
-set -eu
+#!/usr/bin/env bash
+
+set -euo pipefail
 
 main() {
   if [ -z "${NGUILAND_INFRA_DEPLOY_REPOSITORY:-}" ]; then
@@ -43,6 +44,6 @@ main() {
 
 # Direct-execution guard: only invoke main when this script is executed directly,
 # not when it is sourced into another shell.
-if [ "${0##*/}" = "deploy.sh" ]; then
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   main "$@"
 fi
