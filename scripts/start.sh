@@ -92,7 +92,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   bootstrap_flux "${namespace}" "${owner}" "${repository}" "${branch}" "${cluster}"
 
   # Invoke deploy.sh after bootstrap_flux completes.
-  # The deploy.sh script is expected to live alongside this bootstrap script.
+  # The deploy.sh script is expected to live alongside this start script.
   SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
   "${SCRIPT_DIR}/deploy.sh"
 fi
