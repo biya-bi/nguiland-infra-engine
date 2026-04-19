@@ -27,14 +27,8 @@ main() {
 
   printf 'Cloning revision %s from repository %s into %s\n' "$NGUILAND_INFRA_DEPLOY_REVISION" "$NGUILAND_INFRA_DEPLOY_REPOSITORY" "$TEMP_DIR"
 
-  git clone --no-checkout --depth 1 "$NGUILAND_INFRA_DEPLOY_REPOSITORY" "$TEMP_DIR"
+  git clone --branch "$NGUILAND_INFRA_DEPLOY_REVISION" --depth 1 "$NGUILAND_INFRA_DEPLOY_REPOSITORY" "$TEMP_DIR"
   cd "$TEMP_DIR"
-
-  if ! git fetch --depth 1 origin "$NGUILAND_INFRA_DEPLOY_REVISION" 2>/dev/null; then
-    git fetch origin "$NGUILAND_INFRA_DEPLOY_REVISION"
-  fi
-
-  git checkout FETCH_HEAD
 
   if [ ! -x ./entrypoint.sh ] && [ -f ./entrypoint.sh ]; then
     chmod +x ./entrypoint.sh
