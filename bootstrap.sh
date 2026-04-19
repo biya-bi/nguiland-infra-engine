@@ -27,11 +27,7 @@ get_sops_age_private_key() {
 create_namespace() {
   local namespace="${1}"
 
-  local result=$(kubectl get namespaces | tail -n +2 | awk '{print $1}' | grep "${namespace}")
-
-  if [ "${result}" != "${namespace}" ]; then
-      kubectl create namespace "${namespace}"
-  fi
+  kubectl create namespace "${namespace}" --dry-run=client -o yaml | kubectl apply -f -
 }
 
 create_age_key_secret() {
@@ -39,11 +35,7 @@ create_age_key_secret() {
   local secret_name="${2}"
   local sops_age_private_key="${3}"
 
-  local result=$(kubectl get secrets --namespace="${namespace}" | tail -n +2 | awk '{print $1}' | grep "${secret_name}")
-
-  if [ "${result}" != "${secret_name}" ]; then
-    kubectl create secret generic "${secret_name}" --namespace="${namespace}" --from-literal=identity.agekey="${sops_age_private_key}"
-  fi
+  kubectl create secret generic "${secret_name}" --namespace="${namespace}" --from-literal=identity.agekey="${sops_age_private_key}" --dry-run=client -o yaml | kubectl apply -f -
 }
 
 create_sops_age_secret() {
