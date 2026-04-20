@@ -16,5 +16,9 @@ spec:
   healthChecks:
     - apiVersion: apps/v1
       kind: Deployment
+      name: ingress-nginx-controller
+      namespace: infra
+    - apiVersion: apps/v1
+      kind: Deployment
       name: kyverno-admission-controller
       namespace: kyverno
