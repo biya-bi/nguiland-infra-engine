@@ -13,22 +13,22 @@ main() {
     return 1
   fi
 
-  local TEMP_DIR
-  TEMP_DIR=$(mktemp -d)
+  local temp_dir
+  temp_dir=$(mktemp -d)
   cleanup() {
     exit_code=$?
-    if [ -n "${TEMP_DIR:-}" ] && [ -d "$TEMP_DIR" ]; then
-      rm -rf "$TEMP_DIR"
+    if [ -n "${temp_dir:-}" ] && [ -d "$temp_dir" ]; then
+      rm -rf "$temp_dir"
     fi
     printf 'Deployment complete.\n'
     return "$exit_code"
   }
   trap cleanup EXIT
 
-  printf 'Cloning revision %s from repository %s into %s\n' "$NGUILAND_INFRA_DEPLOY_REVISION" "$NGUILAND_INFRA_DEPLOY_REPOSITORY" "$TEMP_DIR"
+  printf 'Cloning revision %s from repository %s into %s\n' "$NGUILAND_INFRA_DEPLOY_REVISION" "$NGUILAND_INFRA_DEPLOY_REPOSITORY" "$temp_dir"
 
-  git clone --branch "$NGUILAND_INFRA_DEPLOY_REVISION" --depth 1 "$NGUILAND_INFRA_DEPLOY_REPOSITORY" "$TEMP_DIR"
-  cd "$TEMP_DIR"
+  git clone --branch "$NGUILAND_INFRA_DEPLOY_REVISION" --depth 1 "$NGUILAND_INFRA_DEPLOY_REPOSITORY" "$temp_dir"
+  cd "$temp_dir"
 
   local entrypoint="./scripts/entrypoint.sh"
 
