@@ -30,11 +30,13 @@ main() {
   git clone --branch "$NGUILAND_INFRA_DEPLOY_REVISION" --depth 1 "$NGUILAND_INFRA_DEPLOY_REPOSITORY" "$TEMP_DIR"
   cd "$TEMP_DIR"
 
-  if [ ! -x ./entrypoint.sh ] && [ -f ./entrypoint.sh ]; then
-    chmod +x ./entrypoint.sh
+  local entrypoint="./scripts/entrypoint.sh"
+
+  if [ ! -x "$entrypoint" ] && [ -f "$entrypoint" ]; then
+    chmod +x "$entrypoint"
   fi
 
-  ./entrypoint.sh
+  "$entrypoint"
 }
 
 # Direct-execution guard: only invoke main when this script is executed directly,
