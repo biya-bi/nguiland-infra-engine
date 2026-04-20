@@ -12,3 +12,8 @@ spec:
   sourceRef:
     kind: GitRepository
     name: tekton
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: tekton-pipelines-webhook
+      namespace: tekton-pipelines
