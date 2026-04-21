@@ -3,4 +3,3 @@ kind: Kustomization
 resources:
 - artifactory-data-cleanup.yaml
 - artifactory-oss-snapshot-cleanup.yaml
-- artifactory-oss-trash-cleanup.yaml
