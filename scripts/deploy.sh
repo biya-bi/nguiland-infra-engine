@@ -2,14 +2,17 @@
 
 set -euo pipefail
 
+YELLOW='\033[0;33m'
+NO_COLOR='\033[0m'
+
 main() {
   if [ -z "${NGUILAND_INFRA_DEPLOY_REPOSITORY:-}" ]; then
-    printf '\033[33mWarning: The NGUILAND_INFRA_DEPLOY_REPOSITORY environment variable is not set or is empty.\033[0m\n' >&2
+    printf "${YELLOW}WARN: The NGUILAND_INFRA_DEPLOY_REPOSITORY environment variable is not set or is empty.${NO_COLOR}\n" >&2
     return 1
   fi
 
   if [ -z "${NGUILAND_INFRA_DEPLOY_REVISION:-}" ]; then
-    printf '\033[33mWarning: The NGUILAND_INFRA_DEPLOY_REVISION environment variable is not set or is empty.\033[0m\n' >&2
+    printf "${YELLOW}WARN: The NGUILAND_INFRA_DEPLOY_REVISION environment variable is not set or is empty.${NO_COLOR}\n" >&2
     return 1
   fi
 
