@@ -1,7 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
-  name: helm-core
+  name: postgres
   namespace: infra
 spec:
   interval: 1m
@@ -13,5 +13,9 @@ spec:
   ignore: |
     # Exclude all
     /*
-    # Include the core directory
+    # Include core directory to allow access to subdirectories
     !/core/
+    # Exclude other charts in core
+    /core/*
+    # Include specific relevant directories
+    !/core/postgres/

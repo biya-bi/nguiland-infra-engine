@@ -10,5 +10,5 @@ spec:
       chart: ./core/postgres
       sourceRef:
         kind: GitRepository
-        name: helm-core
+        name: postgres
       interval: 10m

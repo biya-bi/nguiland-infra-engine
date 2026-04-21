@@ -11,7 +11,7 @@ spec:
       reconcileStrategy: Revision
       sourceRef:
         kind: GitRepository
-        name: helm-core
+        name: artifactory-jcr
       interval: 10m
   values:
     replicaCount: 1

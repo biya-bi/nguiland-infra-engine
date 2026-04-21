@@ -10,7 +10,7 @@ spec:
       chart: ./core/keycloak
       sourceRef:
         kind: GitRepository
-        name: helm-core
+        name: keycloak
       interval: 10m
   values:
     replicaCount: 1
