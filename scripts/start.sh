@@ -83,7 +83,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   namespace="flux-system"
   sops_age_namespace="infra"
   owner="biya-bi"
-  repository="nguiland-infra-engine"
+  repository="nguiland-ops-engine"
 
   sops_age_key_file=$(echo "${SOPS_AGE_KEY_FILE:-}" | xargs)
 
