@@ -84,7 +84,6 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   sops_age_namespace="infra"
   owner="biya-bi"
   repository="nguiland-infra-engine"
-  branch="${branch}"
 
   sops_age_key_file=$(echo "${SOPS_AGE_KEY_FILE:-}" | xargs)
 
