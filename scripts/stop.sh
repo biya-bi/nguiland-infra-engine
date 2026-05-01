@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "--- 1. STOPPING THE GITOPS ENGINE (Flux) ---"
+echo "--- 1. STOPPING THE FLUX GITOPS SYSTEM ---"
 flux uninstall --namespace flux-system --silent 2>/dev/null
 flux uninstall --namespace infra --silent 2>/dev/null
 flux uninstall --namespace kyverno --silent 2>/dev/null

@@ -1,16 +1,16 @@
 # Introduction
 
-This project is an infrastructure engine. Its purpose is to drive an infrastructure based on certain events.
+This project is a Flux-based GitOps repository. Its purpose is to drive infrastructure deployments based on Git events.
 
 # Secret as Code use case
-It can help implement Secret as Code projects in a simple but secure way. By so doing, secrets can be kept encrypted in the Git repository and their life cycles managed via pull requests. With this approach, we can take advantage of GitOps tools such as [Flux](https://fluxcd.io/flux/) which will decrypt the secrets and apply the decrypted secrets to a Kubernetes cluster for example.
+This repository helps implement Secret as Code in a simple, secure way. Secrets can remain encrypted in Git and their life cycles managed through pull requests. With this approach, we can use GitOps tools like [Flux](https://fluxcd.io/flux/) to decrypt and apply secrets to a Kubernetes cluster.
 
 # Preparing the Kubernetes cluster
 
 Let's assume the following:
 - We want to implement GitOps on a Kubernetes cluster.
 - We want to use a personal GitHub repository as our source of truth.
-- We want to use [sops](https://github.com/getsops/sops) and [age](https://github.com/FiloSottile/age) for secret encryption on decryption.
+- We want to use [sops](https://github.com/getsops/sops) and [age](https://github.com/FiloSottile/age) for secret encryption or decryption.
 
 Using Flux 2.3.0, we can achieve our goal by carrying out the below steps:
 
@@ -76,7 +76,7 @@ spec:
 ```
 
 # Reconciling the Kubernetes cluster with the Git repository
-Each time a commit is pushed to the branch tracked by Flux, flux will do the reconciliation after some time. But if we don't want to wait for Flux to do that automatically, we can run the below commands:
+Each time a commit is pushed to the branch tracked by Flux, Flux will do the reconciliation after some time. But if we don't want to wait for Flux to do that automatically, we can run the below commands:
 
 ```
 # Manually launch the reconcilation

@@ -83,7 +83,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   namespace="flux-system"
   sops_age_namespace="infra"
   owner="biya-bi"
-  repository="nguiland-ops-engine"
+  repository="nguiland-ops-flux"
 
   sops_age_key_file=$(echo "${SOPS_AGE_KEY_FILE:-}" | xargs)
 
@@ -92,6 +92,6 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 
   # Invoke deploy.sh after bootstrap_flux completes.
   # The deploy.sh script is expected to live alongside this start script.
-  engine_scripts_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-  "${engine_scripts_dir}/deploy.sh"
+  flux_scripts_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+  "${flux_scripts_dir}/deploy.sh"
 fi
