@@ -5,7 +5,7 @@ metadata:
   namespace: infra
 spec:
   interval: 1m
-  url: ssh://github.com/biya-bi/nguiland-infra-helm.git
+  url: ssh://github.com/biya-bi/nguiland-ops-helm.git
   ref:
     branch: develop
   secretRef:
