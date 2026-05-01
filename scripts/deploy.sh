@@ -6,13 +6,13 @@ YELLOW='\033[0;33m'
 NO_COLOR='\033[0m'
 
 main() {
-  if [ -z "${NGUILAND_INFRA_DEPLOY_REPOSITORY:-}" ]; then
-    printf "${YELLOW}WARN: The NGUILAND_INFRA_DEPLOY_REPOSITORY environment variable is not set or is empty.${NO_COLOR}\n" >&2
+  if [ -z "${NGUILAND_OPS_DEPLOY_REPOSITORY:-}" ]; then
+    printf "${YELLOW}WARN: The NGUILAND_OPS_DEPLOY_REPOSITORY environment variable is not set or is empty.${NO_COLOR}\n" >&2
     return 1
   fi
 
-  if [ -z "${NGUILAND_INFRA_DEPLOY_REVISION:-}" ]; then
-    printf "${YELLOW}WARN: The NGUILAND_INFRA_DEPLOY_REVISION environment variable is not set or is empty.${NO_COLOR}\n" >&2
+  if [ -z "${NGUILAND_OPS_DEPLOY_REVISION:-}" ]; then
+    printf "${YELLOW}WARN: The NGUILAND_OPS_DEPLOY_REVISION environment variable is not set or is empty.${NO_COLOR}\n" >&2
     return 1
   fi
 
@@ -28,9 +28,9 @@ main() {
   }
   trap cleanup EXIT
 
-  printf 'Cloning revision %s from repository %s into %s\n' "$NGUILAND_INFRA_DEPLOY_REVISION" "$NGUILAND_INFRA_DEPLOY_REPOSITORY" "$temp_dir"
+  printf 'Cloning revision %s from repository %s into %s\n' "$NGUILAND_OPS_DEPLOY_REVISION" "$NGUILAND_OPS_DEPLOY_REPOSITORY" "$temp_dir"
 
-  git clone --branch "$NGUILAND_INFRA_DEPLOY_REVISION" --depth 1 "$NGUILAND_INFRA_DEPLOY_REPOSITORY" "$temp_dir"
+  git clone --branch "$NGUILAND_OPS_DEPLOY_REVISION" --depth 1 "$NGUILAND_OPS_DEPLOY_REPOSITORY" "$temp_dir"
   cd "$temp_dir"
 
   local entrypoint="./scripts/entrypoint.sh"
