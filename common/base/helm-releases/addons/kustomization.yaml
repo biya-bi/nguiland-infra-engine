@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
 - artifactory-data-cleanup.yaml
 - artifactory-oss-snapshot-cleanup.yaml
+- tekton-pipelinerun-cleanup.yaml
