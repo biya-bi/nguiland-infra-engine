@@ -93,7 +93,7 @@ patches:
       path: /spec/values/image/repository
       value: jcr.nguiland.org/docker-local/org.nguiland.infra/alpine-ops-toolkit
     - op: replace
-      path: /spec/values/artOssUrl
+      path: /spec/values/envMap/ART_OSS_URL
       value: https://oss.nguiland.org/artifactory
   target:
     kind: HelmRelease
