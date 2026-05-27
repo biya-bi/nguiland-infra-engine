@@ -15,8 +15,6 @@ spec:
     /*
     # Include core directory to allow access to subdirectories
     !/core/
-    # Exclude other charts in core
-    /core/*
     # Include specific relevant directories
-    !/core/artifactory-common/
-    !/core/artifactory-jcr/
+    !/core/artifactory-common/**
+    !/core/artifactory-jcr/**
