@@ -7,11 +7,10 @@ spec:
   interval: 10m
   chart:
     spec:
-      chart: ./core/artifactory-jcr
-      reconcileStrategy: Revision
+      chart: artifactory-jcr
+      version: "0.1.0"
       sourceRef:
-        kind: GitRepository
-        name: artifactory-jcr
-      interval: 10m
+        kind: HelmRepository
+        name: chart-repository
   values:
     replicaCount: 1
