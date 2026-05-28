@@ -1,0 +1,12 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: helm
+  namespace: infra
+spec:
+  interval: 1m
+  url: ssh://github.com/biya-bi/nguiland-ops-helm.git
+  ref:
+    branch: develop
+  secretRef:
+    name: ssh-credentials
