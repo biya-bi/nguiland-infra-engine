@@ -8,6 +8,7 @@ spec:
   chart:
     spec:
       chart: ./core/chart-repository
+      reconcileStrategy: Revision
       sourceRef:
         kind: GitRepository
         name: helm
