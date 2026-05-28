@@ -3,5 +3,6 @@ kind: Kustomization
 resources:
 - artifactory-jcr.yaml
 - artifactory-oss.yaml
+- chart-repository.yaml
 - ingress-nginx.yaml
 - keycloak.yaml
