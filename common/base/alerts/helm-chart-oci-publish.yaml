@@ -8,8 +8,8 @@ spec:
     name: helm-chart-oci-publish
   eventSeverity: info
   eventMetadata:
-    helmChartsDir: .
-    helmRegistry: oci://artifactory-jcr.infra.svc.cluster.local:8082/docker-local
+    chartsDir: .
+    registry: oci://artifactory-jcr.infra.svc.cluster.local:8082/docker-local
     excludedCharts: "artifactory-jcr chart-repository"
   eventSources:
     - kind: GitRepository
