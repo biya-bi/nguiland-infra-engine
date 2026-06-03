@@ -10,7 +10,7 @@ spec:
   chart:
     spec:
       chart: org.nguiland.infra/artifactory-oss
-      version: "0.1.0"
+      version: 0.1.0
       sourceRef:
         kind: HelmRepository
         name: artifactory-oci
