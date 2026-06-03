@@ -5,6 +5,7 @@ metadata:
   namespace: infra
 spec:
   interval: 10m
+  dependsOn: []
   chart:
     spec:
       chart: org.nguiland.infra/artifactory-oss

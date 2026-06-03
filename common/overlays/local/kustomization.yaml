@@ -104,3 +104,33 @@ patches:
      kind: HelmRepository
      name: artifactory-oci
      namespace: infra
+- patch: |-
+    - op: add
+      path: /spec/dependsOn/-
+      value:
+        name: postgres
+        namespace: infra
+  target:
+    kind: HelmRelease
+    name: artifactory-jcr
+    namespace: infra
+- patch: |-
+    - op: add
+      path: /spec/dependsOn/-
+      value:
+        name: postgres
+        namespace: infra
+  target:
+    kind: HelmRelease
+    name: artifactory-oss
+    namespace: infra
+- patch: |-
+    - op: add
+      path: /spec/dependsOn/-
+      value:
+        name: postgres
+        namespace: infra
+  target:
+    kind: HelmRelease
+    name: keycloak
+    namespace: infra
