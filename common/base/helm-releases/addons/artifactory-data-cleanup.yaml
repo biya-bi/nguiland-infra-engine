@@ -5,11 +5,6 @@ metadata:
   namespace: infra
 spec:
   interval: 10m
-  dependsOn:
-    - name: artifactory-jcr
-      namespace: infra
-    - name: artifactory-oss
-      namespace: infra
   chart:
     spec:
       chart: org.nguiland.infra/artifactory-data-cleanup
@@ -27,3 +22,5 @@ spec:
   values:
     image:
       repository: artifactory-jcr.infra/docker-local/org.nguiland.infra/alpine-ops-toolkit
+    envMap:
+      SYSTEM_NAMES: jcr

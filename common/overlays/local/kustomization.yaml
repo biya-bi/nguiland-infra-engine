@@ -88,6 +88,9 @@ patches:
     - op: replace
       path: /spec/values/image/repository
       value: artifactory-jcr.infra/docker-local/org.nguiland.infra/alpine-ops-toolkit
+    - op: replace
+      path: /spec/values/envMap/SYSTEM_NAMES
+      value: jcr oss
    target:
      kind: HelmRelease
      name: artifactory-data-cleanup
