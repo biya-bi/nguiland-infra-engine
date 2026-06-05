@@ -5,6 +5,7 @@ metadata:
   namespace: infra
 spec:
   interval: 10m
+  timeout: 10m
   dependsOn:
     - name: chart-repository
       namespace: infra
