@@ -15,37 +15,6 @@ patches:
       name: nguiland
       namespace: infra
   - patch: |-
-      - op: replace
-        path: /spec/rules/0/mutate/patchStrategicMerge/spec/containers/0/<(image)
-        value: "artifactory-jcr.infra/*"
-    target:
-      group: kyverno.io
-      version: v1
-      kind: ClusterPolicy
-      name: add-imagepullsecrets
-  - patch: |-
-      - op: replace
-        path: /spec/values/image/repository
-        value: artifactory-jcr.infra/docker-local/org.nguiland.infra/alpine-ops-toolkit
-      - op: replace
-        path: /spec/values/envMap/ART_OSS_URL
-        value: http://artifactory-oss.infra:8082/artifactory
-    target:
-      kind: HelmRelease
-      name: artifactory-oss-.*-cleanup
-      namespace: infra
-  - patch: |-
-      - op: replace
-        path: /spec/values/image/repository
-        value: artifactory-jcr.infra/docker-local/org.nguiland.infra/alpine-ops-toolkit
-      - op: replace
-        path: /spec/values/envMap/SYSTEM_NAMES
-        value: jcr oss
-    target:
-      kind: HelmRelease
-      name: artifactory-data-cleanup
-      namespace: infra
-  - patch: |-
       - op: add
         path: /spec/insecure
         # We are on a cluster on our local development machine, so we can allow insecure connections to the registry,

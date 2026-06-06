@@ -7,42 +7,11 @@ resources:
 patches:
   - patch: |-
       - op: replace
-        path: /spec/rules/0/mutate/patchStrategicMerge/spec/containers/0/<(image)
-        value: "int-jcr.nguiland.org/*"
-    target:
-      group: kyverno.io
-      version: v1
-      kind: ClusterPolicy
-      name: add-imagepullsecrets
-  - patch: |-
-      - op: replace
-        path: /spec/values/image/repository
-        value: int-jcr.nguiland.org/docker-local/org.nguiland.infra/alpine-ops-toolkit
-      - op: replace
-        path: /spec/values/envMap/ART_OSS_URL
-        value: https://int-oss.nguiland.org/artifactory
-    target:
-      kind: HelmRelease
-      name: artifactory-oss-.*-cleanup
-      namespace: infra
-  - patch: |-
-      - op: replace
-        path: /spec/values/image/repository
-        value: int-jcr.nguiland.org/docker-local/org.nguiland.infra/alpine-ops-toolkit
-      - op: replace
         path: /spec/values/envMap/SYSTEM_NAMES
         value: jcr oss
     target:
       kind: HelmRelease
       name: artifactory-data-cleanup
-      namespace: infra
-  - patch: |-
-      - op: replace
-        path: /spec/url
-        value: oci://int-jcr.nguiland.org/docker-local
-    target:
-      kind: HelmRepository
-      name: artifactory-oci
       namespace: infra
   - patch: |-
       - op: add

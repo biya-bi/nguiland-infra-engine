@@ -16,30 +16,3 @@ patches:
         value: 2
     target:
       kind: HelmRelease
-  - patch: |-
-      - op: replace
-        path: /spec/values/image/repository
-        value: jcr.nguiland.org/docker-local/org.nguiland.infra/alpine-ops-toolkit
-      - op: replace
-        path: /spec/values/envMap/ART_OSS_URL
-        value: https://oss.nguiland.org/artifactory
-    target:
-      kind: HelmRelease
-      name: artifactory-oss-.*-cleanup
-      namespace: infra
-  - patch: |-
-      - op: replace
-        path: /spec/values/image/repository
-        value: jcr.nguiland.org/docker-local/org.nguiland.infra/alpine-ops-toolkit
-    target:
-      kind: HelmRelease
-      name: artifactory-data-cleanup
-      namespace: infra
-  - patch: |-
-      - op: replace
-        path: /spec/url
-        value: oci://jcr.nguiland.org/docker-local
-    target:
-      kind: HelmRepository
-      name: artifactory-oci
-      namespace: infra

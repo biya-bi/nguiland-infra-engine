@@ -10,7 +10,7 @@ spec:
   eventMetadata:
     chartsDir: addons
     excludedCharts: cronjob-common
-    registry: oci://artifactory-jcr.infra.svc.cluster.local:8082/docker-local
+    registry: oci://${ACTIFACTORY_JCR_HOST}:${ACTIFACTORY_JCR_PORT}/docker-local
   eventSources:
     - kind: GitRepository
       name: helm

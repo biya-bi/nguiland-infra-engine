@@ -5,7 +5,7 @@ metadata:
   namespace: infra
 spec:
   type: oci
-  url: oci://artifactory-jcr.infra.svc.cluster.local:8082/docker-local
+  url: oci://${ACTIFACTORY_JCR_HOST}:${ACTIFACTORY_JCR_PORT}/docker-local
   interval: 5m
   secretRef:
     name: docker-config

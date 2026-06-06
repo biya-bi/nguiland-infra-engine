@@ -21,6 +21,6 @@ spec:
       retries: 3
   values:
     image:
-      repository: artifactory-jcr.infra/docker-local/org.nguiland.infra/alpine-ops-toolkit
+      repository: ${ACTIFACTORY_JCR_HOST}/docker-local/org.nguiland.infra/alpine-ops-toolkit
     envMap:
       SYSTEM_NAMES: jcr
