@@ -1,140 +1,140 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- ../../base
-- ../../optional
+  - ../../base
+  - ../../optional
 
 patches:
-- patch: |-
-    - op: replace
-      path: /spec/path
-      value: ./overlays/local
-  target:
-    group: kustomize.toolkit.fluxcd.io
-    version: v1
-    kind: Kustomization
-    name: ostock
-    namespace: infra
-- patch: |-
-    - op: replace
-      path: /spec/path
-      value: ./local/sops-age
-  target:
-    group: kustomize.toolkit.fluxcd.io
-    version: v1
-    kind: Kustomization
-    name: sops-age
-    namespace: infra
-- patch: |-
-    - op: replace
-      path: /spec/rules/0/host
-      value: artifactory-jcr.infra
-    - op: replace
-      path: /spec/rules/1/host
-      value: keycloak.infra
-    - op: replace
-      path: /spec/rules/2/host
-      value: artifactory-oss.infra
-    - op: replace
-      path: /spec/rules/3/host
-      value: angular-frontend.ostock
-    - op: replace
-      path: /spec/rules/4/host
-      value: gateway-service.ostock
-    - op: remove
-      path: /spec/tls
-  target:
-    group: networking.k8s.io
-    version: v1
-    kind: Ingress
-    name: nguiland
-    namespace: infra
-- patch: |-
-    - op: replace
-      path: /data/environment
-      value: local
-    - op: replace
-      path: /data/image-pull-endpoint
-      value: artifactory-jcr.infra
-    - op: replace
-      path: /data/image-push-endpoint
-      value: artifactory-jcr.infra.svc.cluster.local:8082
-  target:
-    version: v1
-    kind: ConfigMap
-    name: env-settings
-    namespace: infra
-- patch: |-
-    - op: replace
-      path: /spec/rules/0/mutate/patchStrategicMerge/spec/containers/0/<(image)
-      value: "artifactory-jcr.infra/*"
-  target:
-    group: kyverno.io
-    version: v1
-    kind: ClusterPolicy
-    name: add-imagepullsecrets
--  patch: |-
-    - op: replace
-      path: /spec/values/image/repository
-      value: artifactory-jcr.infra/docker-local/org.nguiland.infra/alpine-ops-toolkit
-    - op: replace
-      path: /spec/values/envMap/ART_OSS_URL
-      value: http://artifactory-oss.infra:8082/artifactory
-   target:
-     kind: HelmRelease
-     name: artifactory-oss-.*-cleanup
-     namespace: infra
--  patch: |-
-    - op: replace
-      path: /spec/values/image/repository
-      value: artifactory-jcr.infra/docker-local/org.nguiland.infra/alpine-ops-toolkit
-    - op: replace
-      path: /spec/values/envMap/SYSTEM_NAMES
-      value: jcr oss
-   target:
-     kind: HelmRelease
-     name: artifactory-data-cleanup
-     namespace: infra
--  patch: |-
-    - op: add
-      path: /spec/insecure
-      # We are on a cluster on our local development machine, so we can allow insecure connections to the registry,
-      # which is assumed to be local as well. We shouldn't have to worry about certificates in this case, and this
-      # allows us to avoid the complexity of setting up a local certificate authority and issuing certificates for
-      # our local registry. In upper environments, we will have a valid certificate for the registry, so this patch
-      # have not been included in other overlays.
-      value: true
-   target:
-     kind: HelmRepository
-     name: artifactory-oci
-     namespace: infra
-- patch: |-
-    - op: add
-      path: /spec/dependsOn/-
-      value:
-        name: postgres
-        namespace: infra
-  target:
-    kind: HelmRelease
-    name: artifactory-jcr
-    namespace: infra
-- patch: |-
-    - op: add
-      path: /spec/dependsOn/-
-      value:
-        name: postgres
-        namespace: infra
-  target:
-    kind: HelmRelease
-    name: artifactory-oss
-    namespace: infra
-- patch: |-
-    - op: add
-      path: /spec/dependsOn/-
-      value:
-        name: postgres
-        namespace: infra
-  target:
-    kind: HelmRelease
-    name: keycloak
-    namespace: infra
+  - patch: |-
+      - op: replace
+        path: /spec/path
+        value: ./overlays/local
+    target:
+      group: kustomize.toolkit.fluxcd.io
+      version: v1
+      kind: Kustomization
+      name: ostock
+      namespace: infra
+  - patch: |-
+      - op: replace
+        path: /spec/path
+        value: ./local/sops-age
+    target:
+      group: kustomize.toolkit.fluxcd.io
+      version: v1
+      kind: Kustomization
+      name: sops-age
+      namespace: infra
+  - patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: artifactory-jcr.infra
+      - op: replace
+        path: /spec/rules/1/host
+        value: keycloak.infra
+      - op: replace
+        path: /spec/rules/2/host
+        value: artifactory-oss.infra
+      - op: replace
+        path: /spec/rules/3/host
+        value: angular-frontend.ostock
+      - op: replace
+        path: /spec/rules/4/host
+        value: gateway-service.ostock
+      - op: remove
+        path: /spec/tls
+    target:
+      group: networking.k8s.io
+      version: v1
+      kind: Ingress
+      name: nguiland
+      namespace: infra
+  - patch: |-
+      - op: replace
+        path: /data/environment
+        value: local
+      - op: replace
+        path: /data/image-pull-endpoint
+        value: artifactory-jcr.infra
+      - op: replace
+        path: /data/image-push-endpoint
+        value: artifactory-jcr.infra.svc.cluster.local:8082
+    target:
+      version: v1
+      kind: ConfigMap
+      name: env-settings
+      namespace: infra
+  - patch: |-
+      - op: replace
+        path: /spec/rules/0/mutate/patchStrategicMerge/spec/containers/0/<(image)
+        value: "artifactory-jcr.infra/*"
+    target:
+      group: kyverno.io
+      version: v1
+      kind: ClusterPolicy
+      name: add-imagepullsecrets
+  - patch: |-
+      - op: replace
+        path: /spec/values/image/repository
+        value: artifactory-jcr.infra/docker-local/org.nguiland.infra/alpine-ops-toolkit
+      - op: replace
+        path: /spec/values/envMap/ART_OSS_URL
+        value: http://artifactory-oss.infra:8082/artifactory
+    target:
+      kind: HelmRelease
+      name: artifactory-oss-.*-cleanup
+      namespace: infra
+  - patch: |-
+      - op: replace
+        path: /spec/values/image/repository
+        value: artifactory-jcr.infra/docker-local/org.nguiland.infra/alpine-ops-toolkit
+      - op: replace
+        path: /spec/values/envMap/SYSTEM_NAMES
+        value: jcr oss
+    target:
+      kind: HelmRelease
+      name: artifactory-data-cleanup
+      namespace: infra
+  - patch: |-
+      - op: add
+        path: /spec/insecure
+        # We are on a cluster on our local development machine, so we can allow insecure connections to the registry,
+        # which is assumed to be local as well. We shouldn't have to worry about certificates in this case, and this
+        # allows us to avoid the complexity of setting up a local certificate authority and issuing certificates for
+        # our local registry. In upper environments, we will have a valid certificate for the registry, so this patch
+        # have not been included in other overlays.
+        value: true
+    target:
+      kind: HelmRepository
+      name: artifactory-oci
+      namespace: infra
+  - patch: |-
+      - op: add
+        path: /spec/dependsOn/-
+        value:
+          name: postgres
+          namespace: infra
+    target:
+      kind: HelmRelease
+      name: artifactory-jcr
+      namespace: infra
+  - patch: |-
+      - op: add
+        path: /spec/dependsOn/-
+        value:
+          name: postgres
+          namespace: infra
+    target:
+      kind: HelmRelease
+      name: artifactory-oss
+      namespace: infra
+  - patch: |-
+      - op: add
+        path: /spec/dependsOn/-
+        value:
+          name: postgres
+          namespace: infra
+    target:
+      kind: HelmRelease
+      name: keycloak
+      namespace: infra

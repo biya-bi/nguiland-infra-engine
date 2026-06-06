@@ -1,148 +1,148 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- ../../base
-- ../../optional
+  - ../../base
+  - ../../optional
 
 patches:
-- patch: |-
-    - op: replace
-      path: /spec/path
-      value: ./overlays/int
-  target:
-    group: kustomize.toolkit.fluxcd.io
-    version: v1
-    kind: Kustomization
-    name: ostock
-    namespace: infra
-- patch: |-
-    - op: replace
-      path: /spec/path
-      value: ./int/sops-age
-  target:
-    group: kustomize.toolkit.fluxcd.io
-    version: v1
-    kind: Kustomization
-    name: sops-age
-    namespace: infra
-- patch: |-
-    - op: replace
-      path: /data/environment
-      value: int
-    - op: replace
-      path: /data/image-pull-endpoint
-      value: int-jcr.nguiland.org
-    - op: replace
-      path: /data/image-push-endpoint
-      value: int-jcr.nguiland.org
-  target:
-    version: v1
-    kind: ConfigMap
-    name: env-settings
-    namespace: infra
-- patch: |-
-    - op: replace
-      path: /spec/rules/0/mutate/patchStrategicMerge/spec/containers/0/<(image)
-      value: "int-jcr.nguiland.org/*"
-  target:
-    group: kyverno.io
-    version: v1
-    kind: ClusterPolicy
-    name: add-imagepullsecrets
-- patch: |-
-    - op: replace
-      path: /spec/rules/0/host
-      value: int-jcr.nguiland.org
-    - op: replace
-      path: /spec/rules/1/host
-      value: int-keycloak.nguiland.org
-    - op: replace
-      path: /spec/rules/2/host
-      value: int-oss.nguiland.org
-    - op: replace
-      path: /spec/rules/3/host
-      value: int-ostockweb.nguiland.org
-    - op: replace
-      path: /spec/rules/4/host
-      value: int-ostockapi.nguiland.org
-    - op: add
-      path: /spec/tls/0/hosts/-
-      value: int-jcr.nguiland.org
-    - op: add
-      path: /spec/tls/0/hosts/-
-      value: int-keycloak.nguiland.org
-    - op: add
-      path: /spec/tls/0/hosts/-
-      value: int-oss.nguiland.org
-    - op: add
-      path: /spec/tls/0/hosts/-
-      value: int-ostockweb.nguiland.org
-    - op: add
-      path: /spec/tls/0/hosts/-
-      value: int-ostockapi.nguiland.org
-  target:
-    group: networking.k8s.io
-    version: v1
-    kind: Ingress
-    name: nguiland
-    namespace: infra
--  patch: |-
-    - op: replace
-      path: /spec/values/image/repository
-      value: int-jcr.nguiland.org/docker-local/org.nguiland.infra/alpine-ops-toolkit
-    - op: replace
-      path: /spec/values/envMap/ART_OSS_URL
-      value: https://int-oss.nguiland.org/artifactory
-   target:
-     kind: HelmRelease
-     name: artifactory-oss-.*-cleanup
-     namespace: infra
--  patch: |-
-    - op: replace
-      path: /spec/values/image/repository
-      value: int-jcr.nguiland.org/docker-local/org.nguiland.infra/alpine-ops-toolkit
-    - op: replace
-      path: /spec/values/envMap/SYSTEM_NAMES
-      value: jcr oss
-   target:
-     kind: HelmRelease
-     name: artifactory-data-cleanup
-     namespace: infra
--  patch: |-
-    - op: replace
-      path: /spec/url
-      value: oci://int-jcr.nguiland.org/docker-local
-   target:
-     kind: HelmRepository
-     name: artifactory-oci
-     namespace: infra
-- patch: |-
-    - op: add
-      path: /spec/dependsOn/-
-      value:
-        name: postgres
-        namespace: infra
-  target:
-    kind: HelmRelease
-    name: artifactory-jcr
-    namespace: infra
-- patch: |-
-    - op: add
-      path: /spec/dependsOn/-
-      value:
-        name: postgres
-        namespace: infra
-  target:
-    kind: HelmRelease
-    name: artifactory-oss
-    namespace: infra
-- patch: |-
-    - op: add
-      path: /spec/dependsOn/-
-      value:
-        name: postgres
-        namespace: infra
-  target:
-    kind: HelmRelease
-    name: keycloak
-    namespace: infra
+  - patch: |-
+      - op: replace
+        path: /spec/path
+        value: ./overlays/int
+    target:
+      group: kustomize.toolkit.fluxcd.io
+      version: v1
+      kind: Kustomization
+      name: ostock
+      namespace: infra
+  - patch: |-
+      - op: replace
+        path: /spec/path
+        value: ./int/sops-age
+    target:
+      group: kustomize.toolkit.fluxcd.io
+      version: v1
+      kind: Kustomization
+      name: sops-age
+      namespace: infra
+  - patch: |-
+      - op: replace
+        path: /data/environment
+        value: int
+      - op: replace
+        path: /data/image-pull-endpoint
+        value: int-jcr.nguiland.org
+      - op: replace
+        path: /data/image-push-endpoint
+        value: int-jcr.nguiland.org
+    target:
+      version: v1
+      kind: ConfigMap
+      name: env-settings
+      namespace: infra
+  - patch: |-
+      - op: replace
+        path: /spec/rules/0/mutate/patchStrategicMerge/spec/containers/0/<(image)
+        value: "int-jcr.nguiland.org/*"
+    target:
+      group: kyverno.io
+      version: v1
+      kind: ClusterPolicy
+      name: add-imagepullsecrets
+  - patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: int-jcr.nguiland.org
+      - op: replace
+        path: /spec/rules/1/host
+        value: int-keycloak.nguiland.org
+      - op: replace
+        path: /spec/rules/2/host
+        value: int-oss.nguiland.org
+      - op: replace
+        path: /spec/rules/3/host
+        value: int-ostockweb.nguiland.org
+      - op: replace
+        path: /spec/rules/4/host
+        value: int-ostockapi.nguiland.org
+      - op: add
+        path: /spec/tls/0/hosts/-
+        value: int-jcr.nguiland.org
+      - op: add
+        path: /spec/tls/0/hosts/-
+        value: int-keycloak.nguiland.org
+      - op: add
+        path: /spec/tls/0/hosts/-
+        value: int-oss.nguiland.org
+      - op: add
+        path: /spec/tls/0/hosts/-
+        value: int-ostockweb.nguiland.org
+      - op: add
+        path: /spec/tls/0/hosts/-
+        value: int-ostockapi.nguiland.org
+    target:
+      group: networking.k8s.io
+      version: v1
+      kind: Ingress
+      name: nguiland
+      namespace: infra
+  - patch: |-
+      - op: replace
+        path: /spec/values/image/repository
+        value: int-jcr.nguiland.org/docker-local/org.nguiland.infra/alpine-ops-toolkit
+      - op: replace
+        path: /spec/values/envMap/ART_OSS_URL
+        value: https://int-oss.nguiland.org/artifactory
+    target:
+      kind: HelmRelease
+      name: artifactory-oss-.*-cleanup
+      namespace: infra
+  - patch: |-
+      - op: replace
+        path: /spec/values/image/repository
+        value: int-jcr.nguiland.org/docker-local/org.nguiland.infra/alpine-ops-toolkit
+      - op: replace
+        path: /spec/values/envMap/SYSTEM_NAMES
+        value: jcr oss
+    target:
+      kind: HelmRelease
+      name: artifactory-data-cleanup
+      namespace: infra
+  - patch: |-
+      - op: replace
+        path: /spec/url
+        value: oci://int-jcr.nguiland.org/docker-local
+    target:
+      kind: HelmRepository
+      name: artifactory-oci
+      namespace: infra
+  - patch: |-
+      - op: add
+        path: /spec/dependsOn/-
+        value:
+          name: postgres
+          namespace: infra
+    target:
+      kind: HelmRelease
+      name: artifactory-jcr
+      namespace: infra
+  - patch: |-
+      - op: add
+        path: /spec/dependsOn/-
+        value:
+          name: postgres
+          namespace: infra
+    target:
+      kind: HelmRelease
+      name: artifactory-oss
+      namespace: infra
+  - patch: |-
+      - op: add
+        path: /spec/dependsOn/-
+        value:
+          name: postgres
+          namespace: infra
+    target:
+      kind: HelmRelease
+      name: keycloak
+      namespace: infra

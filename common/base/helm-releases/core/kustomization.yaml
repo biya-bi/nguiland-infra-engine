@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- artifactory-jcr.yaml
-- chart-repository.yaml
-- ingress-nginx.yaml
-- keycloak.yaml
+  - artifactory-jcr.yaml
+  - chart-repository.yaml
+  - ingress-nginx.yaml
+  - keycloak.yaml
