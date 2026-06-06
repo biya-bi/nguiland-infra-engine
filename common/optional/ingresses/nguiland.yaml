@@ -11,3 +11,6 @@
                 number: 8082
           path: /
           pathType: Prefix
+- op: add
+  path: /spec/tls/0/hosts/-
+  value: ${ACTIFACTORY_OSS_HOST}

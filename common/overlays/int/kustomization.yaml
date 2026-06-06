@@ -15,28 +15,6 @@ patches:
       kind: ClusterPolicy
       name: add-imagepullsecrets
   - patch: |-
-      - op: add
-        path: /spec/tls/0/hosts/-
-        value: int-jcr.nguiland.org
-      - op: add
-        path: /spec/tls/0/hosts/-
-        value: int-keycloak.nguiland.org
-      - op: add
-        path: /spec/tls/0/hosts/-
-        value: int-oss.nguiland.org
-      - op: add
-        path: /spec/tls/0/hosts/-
-        value: int-ostockweb.nguiland.org
-      - op: add
-        path: /spec/tls/0/hosts/-
-        value: int-ostockapi.nguiland.org
-    target:
-      group: networking.k8s.io
-      version: v1
-      kind: Ingress
-      name: nguiland
-      namespace: infra
-  - patch: |-
       - op: replace
         path: /spec/values/image/repository
         value: int-jcr.nguiland.org/docker-local/org.nguiland.infra/alpine-ops-toolkit

@@ -57,5 +57,9 @@ spec:
             path: /
             pathType: Prefix
   tls:
-    - hosts: []
+    - hosts:
+        - ${ACTIFACTORY_JCR_HOST}
+        - ${KEYCLOAK_HOST}
+        - ${OSTOCK_ANGULAR_FRONTEND_HOST}
+        - ${OSTOCK_GATEWAY_SERVICE_HOST}
       secretName: nguiland

@@ -17,28 +17,6 @@ patches:
     target:
       kind: HelmRelease
   - patch: |-
-      - op: add
-        path: /spec/tls/0/hosts/-
-        value: jcr.nguiland.org
-      - op: add
-        path: /spec/tls/0/hosts/-
-        value: keycloak.nguiland.org
-      - op: add
-        path: /spec/tls/0/hosts/-
-        value: oss.nguiland.org
-      - op: add
-        path: /spec/tls/0/hosts/-
-        value: ostockng.nguiland.org
-      - op: add
-        path: /spec/tls/0/hosts/-
-        value: ostockapi.nguiland.org
-    target:
-      group: networking.k8s.io
-      version: v1
-      kind: Ingress
-      name: nguiland
-      namespace: infra
-  - patch: |-
       - op: replace
         path: /spec/values/image/repository
         value: jcr.nguiland.org/docker-local/org.nguiland.infra/alpine-ops-toolkit
