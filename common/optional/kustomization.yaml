@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - alerts
   - helm-releases
+  - providers
