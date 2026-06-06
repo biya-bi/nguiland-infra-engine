@@ -8,9 +8,9 @@ spec:
     name: helm-chart-oci-publish
   eventSeverity: info
   eventMetadata:
-    chartsDir: .
+    chartsDir: addons
+    excludedCharts: cronjob-common
     registry: oci://artifactory-jcr.infra.svc.cluster.local:8082/docker-local
-    excludedCharts: artifactory-jcr chart-repository
   eventSources:
     - kind: GitRepository
       name: helm
