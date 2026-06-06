@@ -57,12 +57,9 @@ patches:
         value: dev-keycloak.nguiland.org
       - op: replace
         path: /spec/rules/2/host
-        value: oss.nguiland.org
-      - op: replace
-        path: /spec/rules/3/host
         value: dev-ostockng.nguiland.org
       - op: replace
-        path: /spec/rules/4/host
+        path: /spec/rules/3/host
         value: dev-ostockapi.nguiland.org
       - op: add
         path: /spec/tls/0/hosts/-
@@ -70,9 +67,6 @@ patches:
       - op: add
         path: /spec/tls/0/hosts/-
         value: dev-keycloak.nguiland.org
-      - op: add
-        path: /spec/tls/0/hosts/-
-        value: oss.nguiland.org
       - op: add
         path: /spec/tls/0/hosts/-
         value: dev-ostockng.nguiland.org
@@ -84,17 +78,6 @@ patches:
       version: v1
       kind: Ingress
       name: nguiland
-      namespace: infra
-  - patch: |-
-      - op: replace
-        path: /spec/values/image/repository
-        value: dev-jcr.nguiland.org/docker-local/org.nguiland.infra/alpine-ops-toolkit
-      - op: replace
-        path: /spec/values/envMap/ART_OSS_URL
-        value: https://dev-oss.nguiland.org/artifactory
-    target:
-      kind: HelmRelease
-      name: artifactory-oss-.*-cleanup
       namespace: infra
   - patch: |-
       - op: replace

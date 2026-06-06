@@ -58,12 +58,9 @@ patches:
         value: int-keycloak.nguiland.org
       - op: replace
         path: /spec/rules/2/host
-        value: int-oss.nguiland.org
-      - op: replace
-        path: /spec/rules/3/host
         value: int-ostockweb.nguiland.org
       - op: replace
-        path: /spec/rules/4/host
+        path: /spec/rules/3/host
         value: int-ostockapi.nguiland.org
       - op: add
         path: /spec/tls/0/hosts/-

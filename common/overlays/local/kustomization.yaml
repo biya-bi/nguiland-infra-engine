@@ -34,12 +34,9 @@ patches:
         value: keycloak.infra
       - op: replace
         path: /spec/rules/2/host
-        value: artifactory-oss.infra
-      - op: replace
-        path: /spec/rules/3/host
         value: angular-frontend.ostock
       - op: replace
-        path: /spec/rules/4/host
+        path: /spec/rules/3/host
         value: gateway-service.ostock
       - op: remove
         path: /spec/tls
