@@ -2,25 +2,3 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ../../base
-
-patches:
-  - patch: |-
-      - op: replace
-        path: /spec/path
-        value: ./common/overlays/prod
-    target:
-      group: kustomize.toolkit.fluxcd.io
-      version: v1
-      kind: Kustomization
-      name: common
-      namespace: infra
-  - patch: |-
-      - op: replace
-        path: /spec/path
-        value: ./core/overlays/prod
-    target:
-      group: kustomize.toolkit.fluxcd.io
-      version: v1
-      kind: Kustomization
-      name: core
-      namespace: infra

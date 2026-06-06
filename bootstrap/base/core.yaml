@@ -5,9 +5,12 @@ metadata:
   namespace: infra
 spec:
   interval: 10m0s
-  path: ./core/overlays/${ENVIRONMENT} # Replace ${ENVIRONMENT} in overlays
+  path: ./core/overlays/${ENVIRONMENT}
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
+  postBuild:
+    substitute:
+      ENVIRONMENT: ${ENVIRONMENT}

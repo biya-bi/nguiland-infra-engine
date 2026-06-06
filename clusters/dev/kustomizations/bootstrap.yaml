@@ -11,3 +11,11 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
+  postBuild:
+    substitute:
+      ENVIRONMENT: dev
+      ACTIFACTORY_JCR_HOST: dev-jcr.nguiland.org
+      ACTIFACTORY_OSS_HOST: ""
+      KEYCLOAK_HOST: dev-keycloak.nguiland.org
+      OSTOCK_ANGULAR_FRONTEND_HOST: dev-ostockng.nguiland.org
+      OSTOCK_GATEWAY_SERVICE_HOST: dev-ostockapi.nguiland.org

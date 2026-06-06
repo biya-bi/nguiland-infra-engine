@@ -17,44 +17,15 @@ patches:
     target:
       kind: HelmRelease
   - patch: |-
-      - op: replace
-        path: /spec/path
-        value: ./overlays/prod
-    target:
-      group: kustomize.toolkit.fluxcd.io
-      version: v1
-      kind: Kustomization
-      name: ostock
-      namespace: infra
-  - patch: |-
-      - op: replace
-        path: /spec/path
-        value: ./prod/sops-age
-    target:
-      group: kustomize.toolkit.fluxcd.io
-      version: v1
-      kind: Kustomization
-      name: sops-age
-      namespace: infra
-  - patch: |-
-      - op: replace
-        path: /spec/rules/0/host
-        value: jcr.nguiland.org
-      - op: replace
-        path: /spec/rules/1/host
-        value: keycloak.nguiland.org
-      - op: replace
-        path: /spec/rules/2/host
-        value: ostockng.nguiland.org
-      - op: replace
-        path: /spec/rules/3/host
-        value: ostockapi.nguiland.org
       - op: add
         path: /spec/tls/0/hosts/-
         value: jcr.nguiland.org
       - op: add
         path: /spec/tls/0/hosts/-
         value: keycloak.nguiland.org
+      - op: add
+        path: /spec/tls/0/hosts/-
+        value: oss.nguiland.org
       - op: add
         path: /spec/tls/0/hosts/-
         value: ostockng.nguiland.org
@@ -69,18 +40,14 @@ patches:
       namespace: infra
   - patch: |-
       - op: replace
-        path: /data/environment
-        value: prod
+        path: /spec/values/image/repository
+        value: jcr.nguiland.org/docker-local/org.nguiland.infra/alpine-ops-toolkit
       - op: replace
-        path: /data/image-pull-endpoint
-        value: jcr.nguiland.org
-      - op: replace
-        path: /data/image-push-endpoint
-        value: jcr.nguiland.org
+        path: /spec/values/envMap/ART_OSS_URL
+        value: https://oss.nguiland.org/artifactory
     target:
-      version: v1
-      kind: ConfigMap
-      name: env-settings
+      kind: HelmRelease
+      name: artifactory-oss-.*-cleanup
       namespace: infra
   - patch: |-
       - op: replace

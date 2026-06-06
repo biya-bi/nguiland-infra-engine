@@ -7,7 +7,7 @@ spec:
   dependsOn:
     - name: core
   interval: 10m0s
-  path: ./common/overlays/${ENVIRONMENT} # Replace ${ENVIRONMENT} in overlays
+  path: ./common/overlays/${ENVIRONMENT}
   prune: true
   sourceRef:
     kind: GitRepository
@@ -22,3 +22,13 @@ spec:
       kind: Deployment
       name: kyverno-admission-controller
       namespace: kyverno
+  postBuild:
+    substitute:
+      ENVIRONMENT: ${ENVIRONMENT}
+      ACTIFACTORY_JCR_HOST: ${ACTIFACTORY_JCR_HOST}
+      ACTIFACTORY_OSS_HOST: ${ACTIFACTORY_OSS_HOST}
+      IMAGE_PULL_ENDPOINT: ${ACTIFACTORY_JCR_HOST}
+      IMAGE_PUSH_ENDPOINT: ${ACTIFACTORY_JCR_HOST}
+      KEYCLOAK_HOST: ${KEYCLOAK_HOST}
+      OSTOCK_ANGULAR_FRONTEND_HOST: ${OSTOCK_ANGULAR_FRONTEND_HOST}
+      OSTOCK_GATEWAY_SERVICE_HOST: ${OSTOCK_GATEWAY_SERVICE_HOST}

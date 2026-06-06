@@ -7,41 +7,6 @@ resources:
 patches:
   - patch: |-
       - op: replace
-        path: /spec/path
-        value: ./overlays/int
-    target:
-      group: kustomize.toolkit.fluxcd.io
-      version: v1
-      kind: Kustomization
-      name: ostock
-      namespace: infra
-  - patch: |-
-      - op: replace
-        path: /spec/path
-        value: ./int/sops-age
-    target:
-      group: kustomize.toolkit.fluxcd.io
-      version: v1
-      kind: Kustomization
-      name: sops-age
-      namespace: infra
-  - patch: |-
-      - op: replace
-        path: /data/environment
-        value: int
-      - op: replace
-        path: /data/image-pull-endpoint
-        value: int-jcr.nguiland.org
-      - op: replace
-        path: /data/image-push-endpoint
-        value: int-jcr.nguiland.org
-    target:
-      version: v1
-      kind: ConfigMap
-      name: env-settings
-      namespace: infra
-  - patch: |-
-      - op: replace
         path: /spec/rules/0/mutate/patchStrategicMerge/spec/containers/0/<(image)
         value: "int-jcr.nguiland.org/*"
     target:
@@ -50,18 +15,6 @@ patches:
       kind: ClusterPolicy
       name: add-imagepullsecrets
   - patch: |-
-      - op: replace
-        path: /spec/rules/0/host
-        value: int-jcr.nguiland.org
-      - op: replace
-        path: /spec/rules/1/host
-        value: int-keycloak.nguiland.org
-      - op: replace
-        path: /spec/rules/2/host
-        value: int-ostockweb.nguiland.org
-      - op: replace
-        path: /spec/rules/3/host
-        value: int-ostockapi.nguiland.org
       - op: add
         path: /spec/tls/0/hosts/-
         value: int-jcr.nguiland.org

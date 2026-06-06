@@ -11,3 +11,11 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
+  postBuild:
+    substitute:
+      ENVIRONMENT: local
+      ACTIFACTORY_JCR_HOST: artifactory-jcr.infra
+      ACTIFACTORY_OSS_HOST: artifactory-oss.infra
+      KEYCLOAK_HOST: keycloak.infra
+      OSTOCK_ANGULAR_FRONTEND_HOST: angular-frontend.ostock
+      OSTOCK_GATEWAY_SERVICE_HOST: gateway-service.ostock
