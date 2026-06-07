@@ -14,11 +14,3 @@ spec:
   postBuild:
     substitute:
       ENVIRONMENT: int
-      ACTIFACTORY_JCR_HOST: int-jcr.nguiland.org
-      ACTIFACTORY_JCR_PORT: "443"
-      ACTIFACTORY_OSS_HOST: int-oss.nguiland.org
-      ACTIFACTORY_OSS_PORT: "443"
-      ACTIFACTORY_OSS_SCHEME: https
-      KEYCLOAK_HOST: int-keycloak.nguiland.org
-      OSTOCK_ANGULAR_FRONTEND_HOST: int-ostockweb.nguiland.org
-      OSTOCK_GATEWAY_SERVICE_HOST: int-ostockapi.nguiland.org

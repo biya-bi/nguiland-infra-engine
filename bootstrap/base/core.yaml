@@ -12,5 +12,7 @@ spec:
     name: flux-system
     namespace: flux-system
   postBuild:
-    substitute:
-      ENVIRONMENT: ${ENVIRONMENT}
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+
