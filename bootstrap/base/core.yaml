@@ -14,5 +14,5 @@ spec:
   postBuild:
     substituteFrom:
       - kind: ConfigMap
-        name: cluster-settings
+        name: env-settings
 

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: cluster-settings
+  name: env-settings
   namespace: infra
 data:
   ENVIRONMENT: dev
