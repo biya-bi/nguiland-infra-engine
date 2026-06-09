@@ -2,3 +2,18 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ../../base
+configMapGenerator:
+  - name: env-settings
+    namespace: infra
+    literals:
+      - ENVIRONMENT=${ENVIRONMENT}
+      - ACTIFACTORY_JCR_HOST=artifactory-jcr.infra
+      - ACTIFACTORY_JCR_PORT="8082"
+      - ACTIFACTORY_OSS_HOST=artifactory-oss.infra
+      - ACTIFACTORY_OSS_PORT="8082"
+      - ACTIFACTORY_OSS_SCHEME=http
+      - KEYCLOAK_HOST=keycloak.infra
+      - OSTOCK_ANGULAR_FRONTEND_HOST=angular-frontend.ostock
+      - OSTOCK_GATEWAY_SERVICE_HOST=gateway-service.ostock
+generatorOptions:
+  disableNameSuffixHash: true
