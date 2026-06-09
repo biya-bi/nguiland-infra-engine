@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
   name: orm
-  namespace: infra
+  namespace: ${ENVIRONMENT}
 spec:
   interval: 1m0s
   ref:

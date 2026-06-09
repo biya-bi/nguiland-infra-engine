@@ -2,7 +2,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: bootstrap
-  namespace: infra
+  namespace: int
 spec:
   interval: 10m0s
   path: ./bootstrap/overlays/int

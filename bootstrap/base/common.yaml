@@ -2,7 +2,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: common
-  namespace: infra
+  namespace: ${ENVIRONMENT}
 spec:
   dependsOn:
     - name: core
@@ -17,7 +17,7 @@ spec:
     - apiVersion: apps/v1
       kind: Deployment
       name: ingress-nginx-controller
-      namespace: infra
+      namespace: ${ENVIRONMENT}
     - apiVersion: apps/v1
       kind: Deployment
       name: kyverno-admission-controller

@@ -2,7 +2,7 @@ apiVersion: notification.toolkit.fluxcd.io/v1beta3
 kind: Alert
 metadata:
   name: helm-chart-oci-publish
-  namespace: infra
+  namespace: ${ENVIRONMENT}
 spec:
   providerRef:
     name: helm-chart-oci-publish

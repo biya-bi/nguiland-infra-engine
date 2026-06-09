@@ -2,13 +2,13 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: keycloak
-  namespace: infra
+  namespace: ${ENVIRONMENT}
 spec:
   interval: 10m
   timeout: 10m
   dependsOn:
     - name: chart-repository
-      namespace: infra
+      namespace: ${ENVIRONMENT}
   chart:
     spec:
       chart: keycloak

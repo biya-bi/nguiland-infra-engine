@@ -4,7 +4,7 @@ resources:
   - ../../base
 configMapGenerator:
   - name: env-settings
-    namespace: infra
+    namespace: ${ENVIRONMENT}
     literals:
       - ENVIRONMENT=${ENVIRONMENT}
       - ACTIFACTORY_JCR_HOST=int-jcr.nguiland.org

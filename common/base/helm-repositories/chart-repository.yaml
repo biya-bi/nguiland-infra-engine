@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: chart-repository
-  namespace: infra
+  namespace: ${ENVIRONMENT}
 spec:
-  url: http://chart-repository.infra.svc.cluster.local/charts
+  url: http://chart-repository.${ENVIRONMENT}.svc.cluster.local/charts
   interval: 5m

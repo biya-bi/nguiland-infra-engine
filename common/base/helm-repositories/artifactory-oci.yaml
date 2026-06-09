@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: artifactory-oci
-  namespace: infra
+  namespace: ${ENVIRONMENT}
 spec:
   type: oci
   url: oci://${ACTIFACTORY_JCR_HOST}:${ACTIFACTORY_JCR_PORT}/docker-local

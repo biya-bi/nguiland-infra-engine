@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
   name: docker
-  namespace: infra
+  namespace: ${ENVIRONMENT}
 spec:
   interval: 1m0s
   ref:

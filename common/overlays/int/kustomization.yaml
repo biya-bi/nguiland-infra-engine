@@ -12,34 +12,34 @@ patches:
     target:
       kind: HelmRelease
       name: artifactory-data-cleanup
-      namespace: infra
+      namespace: ${ENVIRONMENT}
   - patch: |-
       - op: add
         path: /spec/dependsOn/-
         value:
           name: postgres
-          namespace: infra
+          namespace: ${ENVIRONMENT}
     target:
       kind: HelmRelease
       name: artifactory-jcr
-      namespace: infra
+      namespace: ${ENVIRONMENT}
   - patch: |-
       - op: add
         path: /spec/dependsOn/-
         value:
           name: postgres
-          namespace: infra
+          namespace: ${ENVIRONMENT}
     target:
       kind: HelmRelease
       name: artifactory-oss
-      namespace: infra
+      namespace: ${ENVIRONMENT}
   - patch: |-
       - op: add
         path: /spec/dependsOn/-
         value:
           name: postgres
-          namespace: infra
+          namespace: ${ENVIRONMENT}
     target:
       kind: HelmRelease
       name: keycloak
-      namespace: infra
+      namespace: ${ENVIRONMENT}

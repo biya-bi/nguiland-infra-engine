@@ -2,12 +2,12 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: artifactory-oss-snapshot-cleanup
-  namespace: infra
+  namespace: ${ENVIRONMENT}
 spec:
   interval: 10m
   dependsOn:
     - name: artifactory-oss
-      namespace: infra
+      namespace: ${ENVIRONMENT}
   chart:
     spec:
       chart: org.nguiland.infra/artifactory-oss-snapshot-cleanup

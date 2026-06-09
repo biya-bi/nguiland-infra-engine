@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: artifactory-oss-config
-  namespace: infra
+  namespace: ${ENVIRONMENT}
 data:
   artifactory.config.import.yml: |
     GeneralConfiguration:
