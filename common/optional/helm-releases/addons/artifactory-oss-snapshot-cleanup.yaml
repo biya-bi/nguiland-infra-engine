@@ -24,6 +24,6 @@ spec:
       retries: 3
   values:
     image:
-      repository: ${ACTIFACTORY_JCR_HOST}/docker-local/org.nguiland.infra/alpine-ops-toolkit
+      repository: ${ARTIFACTORY_JCR_HOST}/docker-local/org.nguiland.infra/alpine-ops-toolkit
     envMap:
-      ART_OSS_URL: ${ACTIFACTORY_OSS_SCHEME}://${ACTIFACTORY_OSS_HOST}:${ACTIFACTORY_OSS_PORT}/artifactory
+      ART_OSS_URL: ${ARTIFACTORY_OSS_SCHEME}://${ARTIFACTORY_OSS_HOST}:${ARTIFACTORY_OSS_PORT}/artifactory

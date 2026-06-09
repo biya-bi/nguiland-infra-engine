@@ -1,7 +1,7 @@
 - op: add
   path: /spec/rules/-
   value:
-    host: ${ACTIFACTORY_OSS_HOST}
+    host: ${ARTIFACTORY_OSS_HOST}
     http:
       paths:
         - backend:
@@ -13,4 +13,4 @@
           pathType: Prefix
 - op: add
   path: /spec/tls/0/hosts/-
-  value: ${ACTIFACTORY_OSS_HOST}
+  value: ${ARTIFACTORY_OSS_HOST}

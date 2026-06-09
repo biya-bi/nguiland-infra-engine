@@ -7,11 +7,11 @@ configMapGenerator:
     namespace: ${ENVIRONMENT}
     literals:
       - ENVIRONMENT=${ENVIRONMENT}
-      - ACTIFACTORY_JCR_HOST=artifactory-jcr.${ENVIRONMENT}
-      - ACTIFACTORY_JCR_PORT="8082"
-      - ACTIFACTORY_OSS_HOST=artifactory-oss.${ENVIRONMENT}
-      - ACTIFACTORY_OSS_PORT="8082"
-      - ACTIFACTORY_OSS_SCHEME=http
+      - ARTIFACTORY_JCR_HOST=artifactory-jcr.${ENVIRONMENT}
+      - ARTIFACTORY_JCR_PORT="8082"
+      - ARTIFACTORY_OSS_HOST=artifactory-oss.${ENVIRONMENT}
+      - ARTIFACTORY_OSS_PORT="8082"
+      - ARTIFACTORY_OSS_SCHEME=http
       - KEYCLOAK_HOST=keycloak.${ENVIRONMENT}
       - OSTOCK_ANGULAR_FRONTEND_HOST=angular-frontend.ostock
       - OSTOCK_GATEWAY_SERVICE_HOST=gateway-service.ostock
