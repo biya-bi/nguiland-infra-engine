@@ -15,3 +15,7 @@ spec:
     kind: GitRepository
     name: nguiland-ops-secrets
     namespace: flux-system
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: env-settings

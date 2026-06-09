@@ -12,3 +12,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: ostock
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: env-settings

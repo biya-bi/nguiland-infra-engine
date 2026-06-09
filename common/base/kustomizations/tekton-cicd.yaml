@@ -17,3 +17,7 @@ spec:
       kind: Deployment
       name: tekton-pipelines-webhook
       namespace: tekton-pipelines
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: env-settings
