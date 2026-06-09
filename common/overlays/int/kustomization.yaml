@@ -12,7 +12,6 @@ patches:
     target:
       kind: HelmRelease
       name: artifactory-data-cleanup
-      namespace: ${ENVIRONMENT}
   - patch: |-
       - op: add
         path: /spec/dependsOn/-
@@ -22,7 +21,6 @@ patches:
     target:
       kind: HelmRelease
       name: artifactory-jcr
-      namespace: ${ENVIRONMENT}
   - patch: |-
       - op: add
         path: /spec/dependsOn/-
@@ -32,7 +30,6 @@ patches:
     target:
       kind: HelmRelease
       name: artifactory-oss
-      namespace: ${ENVIRONMENT}
   - patch: |-
       - op: add
         path: /spec/dependsOn/-
@@ -42,4 +39,3 @@ patches:
     target:
       kind: HelmRelease
       name: keycloak
-      namespace: ${ENVIRONMENT}

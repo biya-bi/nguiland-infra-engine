@@ -9,11 +9,8 @@ patches:
       - op: remove
         path: /spec/tls
     target:
-      group: networking.k8s.io
-      version: v1
       kind: Ingress
       name: nguiland
-      namespace: ${ENVIRONMENT}
   - patch: |-
       - op: add
         path: /spec/insecure
@@ -26,7 +23,6 @@ patches:
     target:
       kind: HelmRepository
       name: artifactory-oci
-      namespace: ${ENVIRONMENT}
   - patch: |-
       - op: add
         path: /spec/dependsOn/-
@@ -36,7 +32,6 @@ patches:
     target:
       kind: HelmRelease
       name: artifactory-jcr
-      namespace: ${ENVIRONMENT}
   - patch: |-
       - op: add
         path: /spec/dependsOn/-
@@ -46,7 +41,6 @@ patches:
     target:
       kind: HelmRelease
       name: artifactory-oss
-      namespace: ${ENVIRONMENT}
   - patch: |-
       - op: add
         path: /spec/dependsOn/-
@@ -56,4 +50,3 @@ patches:
     target:
       kind: HelmRelease
       name: keycloak
-      namespace: ${ENVIRONMENT}

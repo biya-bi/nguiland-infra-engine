@@ -4,7 +4,6 @@ resources:
   - ../../base
 configMapGenerator:
   - name: env-settings
-    namespace: ${ENVIRONMENT}
     literals:
       - ENVIRONMENT=${ENVIRONMENT}
       - ARTIFACTORY_JCR_HOST=dev-jcr.nguiland.org
