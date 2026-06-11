@@ -5,7 +5,7 @@ metadata:
   namespace: int
 spec:
   interval: 10m0s
-  path: ./bootstrap/overlays/int
+  path: ./bootstrap
   prune: true
   sourceRef:
     kind: GitRepository
