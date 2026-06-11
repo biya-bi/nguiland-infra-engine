@@ -2,17 +2,3 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ../../base
-configMapGenerator:
-  - name: env-settings
-    literals:
-      - ENVIRONMENT=${ENVIRONMENT}
-      - ARTIFACTORY_JCR_HOST=jcr.nguiland.org
-      - ARTIFACTORY_JCR_PORT="443"
-      - ARTIFACTORY_OSS_HOST=""
-      - ARTIFACTORY_OSS_PORT=""
-      - ARTIFACTORY_OSS_SCHEME=""
-      - KEYCLOAK_HOST=keycloak.nguiland.org
-      - OSTOCK_ANGULAR_FRONTEND_HOST=ostockng.nguiland.org
-      - OSTOCK_GATEWAY_SERVICE_HOST=ostockapi.nguiland.org
-generatorOptions:
-  disableNameSuffixHash: true

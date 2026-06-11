@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-settings
+  namespace: local
+data:
+  ENVIRONMENT: local
+  ARTIFACTORY_JCR_HOST: artifactory-jcr.local
+  ARTIFACTORY_JCR_PORT: "8082"
+  ARTIFACTORY_OSS_HOST: artifactory-oss.local
+  ARTIFACTORY_OSS_PORT: "8082"
+  ARTIFACTORY_OSS_SCHEME: http
+  KEYCLOAK_HOST: keycloak.local
+  OSTOCK_ANGULAR_FRONTEND_HOST: angular-frontend.ostock
+  OSTOCK_GATEWAY_SERVICE_HOST: gateway-service.ostock
