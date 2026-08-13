@@ -21,28 +21,5 @@ spec:
     cleanup:
       image:
         repository: ${ARTIFACTORY_JCR_HOST}/docker-local/org.nguiland.infra/alpine-ops-toolkit
-      env:
-        - name: ART_OSS_URL
-          value: ${ARTIFACTORY_OSS_SCHEME}://${ARTIFACTORY_OSS_HOST}:${ARTIFACTORY_OSS_PORT}/artifactory
-        - name: REPO
-          value: "libs-snapshot-local"
-        - name: KEEP
-          value: "5"
-        - name: MAX_AGE_HOURS
-          value: "6"
-        - name: DRY_RUN
-          value: "false"
-        - name: MAX_PARALLEL
-          value: "10"
-        - name: RETRIES
-          value: "3"
-        - name: ART_OSS_USER
-          valueFrom:
-            secretKeyRef:
-              name: artifactory-oss
-              key: user
-        - name: ART_OSS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: artifactory-oss
-              key: password
+      envMap:
+        ART_OSS_URL: ${ARTIFACTORY_OSS_SCHEME}://${ARTIFACTORY_OSS_HOST}:${ARTIFACTORY_OSS_PORT}/artifactory
