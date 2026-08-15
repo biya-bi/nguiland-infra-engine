@@ -6,13 +6,6 @@ resources:
 
 patches:
   - patch: |-
-      - op: replace
-        path: /spec/values/envMap/SYSTEM_NAMES
-        value: jcr oss
-    target:
-      kind: HelmRelease
-      name: artifactory-data-cleanup
-  - patch: |-
       - op: add
         path: /spec/dependsOn/-
         value:
