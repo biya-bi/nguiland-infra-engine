@@ -13,3 +13,4 @@ data:
   KEYCLOAK_HOST: keycloak.local
   OSTOCK_ANGULAR_FRONTEND_HOST: angular-frontend.ostock
   OSTOCK_GATEWAY_SERVICE_HOST: gateway-service.ostock
+  SKIP_TLS: "true"

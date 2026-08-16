@@ -13,3 +13,4 @@ data:
   KEYCLOAK_HOST: keycloak.nguiland.org
   OSTOCK_ANGULAR_FRONTEND_HOST: ostockng.nguiland.org
   OSTOCK_GATEWAY_SERVICE_HOST: ostockapi.nguiland.org
+  SKIP_TLS: "false"
