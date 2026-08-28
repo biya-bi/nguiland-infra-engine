@@ -6,6 +6,8 @@ metadata:
 spec:
   providerRef:
     name: maven-lib
+  inclusionList:
+    - "^stored artifact for commit '.*'$"
   eventSeverity: info
   eventMetadata:
     contextDir: .

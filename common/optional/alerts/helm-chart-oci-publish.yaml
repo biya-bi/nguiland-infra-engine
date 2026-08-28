@@ -6,6 +6,8 @@ metadata:
 spec:
   providerRef:
     name: helm-chart-oci-publish
+  inclusionList:
+    - "^stored artifact for commit '.*'$"
   eventSeverity: info
   eventMetadata:
     chartsDir: addons
