@@ -13,6 +13,7 @@ spec:
     chartsDir: addons
     excludedCharts: cronjob-common
     registry: oci://${ARTIFACTORY_JCR_HOST}:${ARTIFACTORY_JCR_PORT}/docker-local
+    pipeline: helm-chart-oci-publish
   eventSources:
     - kind: GitRepository
       name: helm

@@ -11,6 +11,7 @@ spec:
   eventSeverity: info
   eventMetadata:
     contextDir: .
+    pipeline: docker-build
   eventSources:
     - kind: GitRepository
       name: docker

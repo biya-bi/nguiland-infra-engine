@@ -11,6 +11,7 @@ spec:
   eventSeverity: info
   eventMetadata:
     contextDir: .
+    pipeline: maven-lib
   eventSources:
     - kind: GitRepository
       name: io-utils
