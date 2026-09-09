@@ -4,5 +4,6 @@ metadata:
   name: flux-gitrepository-tekton-trigger
   namespace: ${ENVIRONMENT}
 spec:
-  type: generic
-  address: http://flux-gitrepository-tekton-trigger.${ENVIRONMENT}.svc.cluster.local:8080/events
+  type: nats
+  address: nats://nats.${ENVIRONMENT}.svc.cluster.local:4222
+  channel: flux.gitrepository.events
