@@ -1,6 +1,4 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - maven-lib.yaml
-  - docker-build.yaml
-  - helm-chart-oci-publish.yaml
+  - flux-gitrepository-tekton-trigger.yaml

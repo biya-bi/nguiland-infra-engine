@@ -5,7 +5,7 @@ metadata:
   namespace: ${ENVIRONMENT}
 spec:
   providerRef:
-    name: maven-lib
+    name: flux-gitrepository-tekton-trigger
   inclusionList:
     - "^stored artifact for commit '.*'$"
   eventSeverity: info

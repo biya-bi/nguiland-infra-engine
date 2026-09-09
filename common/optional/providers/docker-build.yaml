@@ -1,8 +1,0 @@
-apiVersion: notification.toolkit.fluxcd.io/v1beta3
-kind: Provider
-metadata:
-  name: docker-build
-  namespace: ${ENVIRONMENT}
-spec:
-  type: generic
-  address: http://el-docker-build.${ENVIRONMENT}.svc.cluster.local:8080/
