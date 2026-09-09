@@ -11,7 +11,8 @@ spec:
   eventSeverity: info
   eventMetadata:
     contextDir: .
-    pipeline: maven-lib
+    pipelineName: maven-lib
+    eventListenerUrl: http://el-maven-lib.${ENVIRONMENT}.svc.cluster.local:8080/
   eventSources:
     - kind: GitRepository
       name: io-utils
