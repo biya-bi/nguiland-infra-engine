@@ -1,0 +1,13 @@
+apiVersion: jetstream.nats.io/v1beta2
+kind: Stream
+metadata:
+  name: flux-gitrepository-events
+  namespace: ${ENVIRONMENT}
+spec:
+  name: FLUX_GITREPOSITORY_EVENTS
+  subjects:
+    - flux.gitrepository.events
+  storage: file
+  retention: limits
+  maxAge: 2160h
+  replicas: 1

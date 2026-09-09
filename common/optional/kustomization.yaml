@@ -8,3 +8,5 @@ resources:
   - helm-repositories
   - ingresses
   - providers
+  - streams
+
