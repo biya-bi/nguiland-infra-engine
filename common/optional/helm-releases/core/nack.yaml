@@ -1,0 +1,32 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nack
+  namespace: ${ENVIRONMENT}
+spec:
+  interval: 10m
+  timeout: 10m
+  dependsOn:
+    - name: nats
+  chart:
+    spec:
+      chart: nack
+      version: 0.35.*
+      sourceRef:
+        kind: HelmRepository
+        name: nats
+      interval: 5m
+  releaseName: nack
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  test:
+    enable: false
+  values:
+    jetstream:
+      enabled: true
+      nats:
+        url: nats://nats.${ENVIRONMENT}.svc.cluster.local:4222
