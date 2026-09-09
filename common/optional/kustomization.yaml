@@ -7,6 +7,6 @@ resources:
   - helm-releases
   - helm-repositories
   - ingresses
+  - kustomizations
   - providers
-  - streams
 
