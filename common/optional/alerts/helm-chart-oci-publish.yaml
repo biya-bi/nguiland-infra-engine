@@ -8,6 +8,7 @@ spec:
     name: flux-gitrepository-tekton-trigger
   inclusionList:
     - "^stored artifact for commit '.*'$"
+    - "^no changes since last reconcilation'.*'$"
   eventSeverity: info
   eventMetadata:
     chartsDir: addons
