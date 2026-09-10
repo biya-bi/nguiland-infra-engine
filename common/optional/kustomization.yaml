@@ -3,8 +3,6 @@ kind: Kustomization
 resources:
   - alerts
   - config-maps
-  - git-repositories
-  - helm-releases
   - helm-repositories
   - ingresses
   - kustomizations
