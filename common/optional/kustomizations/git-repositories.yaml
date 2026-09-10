@@ -1,24 +1,19 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: optional-streams
+  name: optional-git-repositories
   namespace: ${ENVIRONMENT}
 spec:
   interval: 10m
   timeout: 10m
   dependsOn:
-    - name: optional-helm-releases
-  path: ./common/optional/streams
+    - name: optional-streams
+  path: ./common/optional/git-repositories
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  healthChecks:
-    - apiVersion: jetstream.nats.io/v1beta2
-      kind: Stream
-      name: flux-gitrepository-events
-      namespace: ${ENVIRONMENT}
   postBuild:
     substituteFrom:
       - kind: ConfigMap
