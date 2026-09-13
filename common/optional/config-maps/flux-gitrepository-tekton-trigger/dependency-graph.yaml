@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flux-gitrepository-tekton-trigger-dependencies
+  namespace: ${ENVIRONMENT}
+data:
+  dependencies.yaml: |
+    repositories:
+      dependencies: []
+      docker: []
+      dto:
+        - dependencies
+      helm: []
+      io-utils:
+        - dependencies
+      ms-parent:
+        - dependencies
+      orm:
+        - dependencies
+      rest:
+        - dependencies
+        - orm
+        - dto
+      web-oauth2:
+        - dependencies
